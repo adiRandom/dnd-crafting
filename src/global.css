@@ -14,6 +14,10 @@
   --qwik-dirty-black: #1d2033;
   --qwik-dark-background: #151934;
   --qwik-dark-text: #ffffff;
+
+  --blue-container-bg: rgba(60, 75, 131, 0.16);
+  --primary-btn:rgba(66, 32, 69, 1);
+  --text-on-purple:rgba(250, 202, 202, 1);
 }
 
 html {
@@ -53,4 +57,5 @@ html {
 body {
   padding: 0;
   line-height: inherit;
+  font-family: 'PT Serif', serif;
 }
