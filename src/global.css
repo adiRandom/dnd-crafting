@@ -7,34 +7,39 @@
  */
 
 :root {
-  --qwik-dark-blue: #006ce9;
-  --qwik-light-blue: #18b6f6;
-  --qwik-light-purple: #ac7ff4;
-  --qwik-dark-purple: #713fc2;
-  --qwik-dirty-black: #1d2033;
-  --qwik-dark-background: #151934;
-  --qwik-dark-text: #ffffff;
+    --qwik-dark-blue: #006ce9;
+    --qwik-light-blue: #18b6f6;
+    --qwik-light-purple: #ac7ff4;
+    --qwik-dark-purple: #713fc2;
+    --qwik-dirty-black: #1d2033;
+    --qwik-dark-background: #151934;
+    --qwik-dark-text: #ffffff;
 
-  --blue-container-bg: rgba(60, 75, 131, 0.16);
-  --primary-btn:rgba(66, 32, 69, 1);
-  --text-on-purple:rgba(250, 202, 202, 1);
+    --purple-container-bg: rgba(60, 75, 131, 0.16);
+    --primary-btn: rgba(66, 32, 69, 1);
+    --primary-btn-transparent: rgba(66, 32, 69, 0);
+    --text-on-purple: rgba(250, 202, 202, 1);
+    --button-glow: rgb(100, 61, 105);
+
+    --separator: rgba(250, 202, 202, 1);
 }
 
 html {
-  line-height: 1;
-  -webkit-text-size-adjust: 100%;
-  -moz-tab-size: 4;
-  -o-tab-size: 4;
-  tab-size: 4;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    line-height: 1;
+    -webkit-text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
 }
 
 body {
-  padding: 0;
-  margin: 0;
-  line-height: inherit;
+    padding: 0;
+    margin: 0;
+    line-height: inherit;
 }
 
 /**
@@ -45,17 +50,19 @@ body {
  *
  */
 html {
-  -webkit-text-size-adjust: 100%;
-  -moz-tab-size: 4;
-  -o-tab-size: 4;
-  tab-size: 4;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    -webkit-text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    font-family: "PT Serif", serif;
 }
 
 body {
-  padding: 0;
-  line-height: inherit;
-  font-family: 'PT Serif', serif;
+    padding: 0;
+    line-height: inherit;
+    font-family: "PT Serif", serif;
+}
+
+*{
+    font-family: "PT Serif", serif;
 }

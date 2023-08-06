@@ -10,7 +10,6 @@ import { useCssClassNameAnimation } from "~/hooks/useCssClassNameAnimation";
 import type { ModalModel } from "~/models/ModalModel";
 import { useDebouncedSignal } from "~/hooks/useDebouncedSignal";
 
-// TODO: Store to open it with modal object
 
 export type ModalContext = {
     openModal$: PropFunction<(model: ModalModel) => void>;

@@ -219,9 +219,3 @@ main {
     justify-content: center;
     align-items: center;
 }
-
-#test {
-    width: 600px;
-    height: 600px;
-    background-color: rgba(128, 77, 125, 0.16);
-}
