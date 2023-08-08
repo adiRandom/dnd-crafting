@@ -1,14 +1,14 @@
 import { PropFunction, component$ } from "@builder.io/qwik";
-import styles from "./button.module.css";
+import styles from "./crackedButton.module.css";
 
-export type CallbackButtonProps = {
+export type CrackedButtonProps = {
     label: string;
     onClick$: PropFunction<() => void>;
     order: "first" | "last" | "middle";
     icon: string;
 };
 
-export const CallbackButton = component$((props: CallbackButtonProps) => {
+export const CrackedButton = component$((props: CrackedButtonProps) => {
     return (
         <button
             class={`${styles.button} ${styles[props.order]}`}

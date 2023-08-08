@@ -1,9 +1,9 @@
 import type { PropFunction } from "@builder.io/qwik";
 import { component$ } from "@builder.io/qwik";
 import { Link } from "@builder.io/qwik-city";
-import { CallbackButton } from "./callbackButton";
+import { CrackedButton } from "../buttons/crackedButton";
 import styles from "./styles.module.css";
-import buttonStyles from "./button.module.css";
+import buttonStyles from "../buttons/crackedButton.module.css";
 
 export type ButtonOptions =
     | {
@@ -35,7 +35,7 @@ export const ButtonGroup = component$((props: ButtonGroupProps) => {
                         : "middle";
                 if ("onClick" in button) {
                     return (
-                        <CallbackButton
+                        <CrackedButton 
                             label={button.label}
                             key={button.label}
                             onClick$={button.onClick}
@@ -43,7 +43,7 @@ export const ButtonGroup = component$((props: ButtonGroupProps) => {
                             icon={button.icon}
                         >
                             {button.label}
-                        </CallbackButton>
+                        </CrackedButton>
                     );
                 } else {
                     return (
