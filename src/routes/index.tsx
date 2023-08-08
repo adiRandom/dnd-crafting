@@ -18,7 +18,7 @@ export default component$(() => {
         {
             icon: "🔨",
             label: "Smithing Tools",
-            href: "/smithing",
+            href: "/tool/smithing",
         },
     ];
 
