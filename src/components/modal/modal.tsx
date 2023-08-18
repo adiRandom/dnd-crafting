@@ -9,7 +9,7 @@ import styles from "./style.css?inline";
 import { useCssClassNameAnimation } from "~/hooks/useCssClassNameAnimation";
 import type { ModalModel } from "~/models/ModalModel";
 import { useDebouncedSignal } from "~/hooks/useDebouncedSignal";
-
+import { PrimaryButton } from "../ui/buttons/primaryButton";
 
 export type ModalContext = {
     openModal$: PropFunction<(model: ModalModel) => void>;
@@ -55,9 +55,10 @@ const Modal = component$(
                             <div id="content">
                                 <p>{model.content}</p>
                             </div>
-                            <button id="action" onClick$={() => close$()}>
-                                {model.button}
-                            </button>
+                            <PrimaryButton
+                                label={model.button}
+                                onClick$={() => close$()}
+                            />
                         </div>
                     </div>
                 )}

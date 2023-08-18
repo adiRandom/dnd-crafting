@@ -5,6 +5,8 @@ import styles from "./styles.module.css";
 import type { Rarity } from "~/models/rarity";
 import { RarityButtonGroup } from "~/components/ui/buttonGroup/rarityButtonGroup/rarityButtonGroup";
 import { capitalize } from "~/lib/stringUtils";
+import { ITEM_TIERS } from "~/models/itemTierInfo";
+import { PrimaryButton } from "~/components/ui/buttons/primaryButton";
 
 export default component$(() => {
     const location = useLocation();
@@ -38,11 +40,51 @@ export default component$(() => {
                 </div>
                 <div
                     class={{
-                        [styles.infoContainer]: selectedRarity.value,
+                        [styles.infoContainer]: true,
                         [styles.infoContainerNoSelection]:
                             !selectedRarity.value,
                     }}
-                ></div>
+                >
+                    <div class={styles.reqContainer}>
+                        <h1 class={styles.infoHeader}>Requirements</h1>
+                        <p class={styles.infoItem}>
+                            {`Number of ingredient points: ${
+                                selectedRarity.value
+                                    ? ITEM_TIERS[selectedRarity.value]
+                                          .numberOfIp
+                                    : ""
+                            } ${selectedRarity.value?.toString() ?? ""} IP`}
+                        </p>
+                        <p class={styles.infoItem}>
+                            {`DC to acquire IP: ${
+                                selectedRarity.value
+                                    ? ITEM_TIERS[selectedRarity.value].dcMin
+                                    : ""
+                            }`}
+                            {selectedRarity.value &&
+                            ITEM_TIERS[selectedRarity.value].dcMax
+                                ? "-" +
+                                  ITEM_TIERS[
+                                      selectedRarity.value
+                                  ].dcMax?.toString()
+                                : ""}
+                        </p>
+                        <p class={styles.infoItem}>{`Time to craft: ${
+                            selectedRarity.value
+                                ? ITEM_TIERS[selectedRarity.value].timeInDays
+                                : ""
+                        }`}</p>
+                    </div>
+                    <div class={styles.tagContainer}>
+                        <h2 class={styles.tagHeader}>
+                            Tags Available:{" "}
+                            {selectedRarity.value
+                                ? ITEM_TIERS[selectedRarity.value].tags
+                                : ""}
+                        </h2>
+                        <PrimaryButton label="Fill Tags" onClick$={() => {}} />
+                    </div>
+                </div>
             </div>
         </div>
     );
