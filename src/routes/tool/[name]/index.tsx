@@ -5,13 +5,14 @@ import styles from "./styles.module.css";
 import type { Rarity } from "~/models/rarity";
 import { RarityButtonGroup } from "~/components/ui/buttonGroup/rarityButtonGroup/rarityButtonGroup";
 import { capitalize } from "~/lib/stringUtils";
-import { ITEM_TIERS } from "~/models/itemTierInfo";
 import { PrimaryButton } from "~/components/ui/buttons/primaryButton";
+import { useItemTiers } from "~/hooks/useItemTiers";
 
 export default component$(() => {
     const location = useLocation();
     const toolName = location.params.name;
     const selectedRarity = useSignal<Rarity | null>(null);
+    const itemTiers = useItemTiers();
 
     useIntroModal({
         title: `${capitalize(toolName)} Tool Rules`,
@@ -19,6 +20,10 @@ export default component$(() => {
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
         button: "Start Crafting",
     });
+
+    if (!itemTiers.value) {
+        return null;
+    }
 
     return (
         <div class={styles.main}>
@@ -50,7 +55,7 @@ export default component$(() => {
                         <p class={styles.infoItem}>
                             {`Number of ingredient points: ${
                                 selectedRarity.value
-                                    ? ITEM_TIERS[selectedRarity.value]
+                                    ? itemTiers.value[selectedRarity.value]
                                           .numberOfIp
                                     : ""
                             } ${selectedRarity.value?.toString() ?? ""} IP`}
@@ -58,20 +63,20 @@ export default component$(() => {
                         <p class={styles.infoItem}>
                             {`DC to acquire IP: ${
                                 selectedRarity.value
-                                    ? ITEM_TIERS[selectedRarity.value].dcMin
+                                    ? itemTiers.value[selectedRarity.value].dcMin
                                     : ""
                             }`}
                             {selectedRarity.value &&
-                            ITEM_TIERS[selectedRarity.value].dcMax
+                            itemTiers.value[selectedRarity.value].dcMax
                                 ? "-" +
-                                  ITEM_TIERS[
+                                  itemTiers.value[
                                       selectedRarity.value
                                   ].dcMax?.toString()
                                 : ""}
                         </p>
                         <p class={styles.infoItem}>{`Time to craft: ${
                             selectedRarity.value
-                                ? ITEM_TIERS[selectedRarity.value].timeInDays
+                                ? itemTiers.value[selectedRarity.value].timeInDays
                                 : ""
                         }`}</p>
                     </div>
@@ -79,7 +84,7 @@ export default component$(() => {
                         <h2 class={styles.tagHeader}>
                             Tags Available:{" "}
                             {selectedRarity.value
-                                ? ITEM_TIERS[selectedRarity.value].tags
+                                ? itemTiers.value[selectedRarity.value].tags
                                 : ""}
                         </h2>
                         <PrimaryButton label="Fill Tags" onClick$={() => {}} />
