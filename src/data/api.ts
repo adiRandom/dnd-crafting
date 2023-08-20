@@ -52,7 +52,7 @@ const TAGS: TagModel[] = [
     type: TagType.FormTag,
     minRarity: Rarity.Common,
     slotCost: { value: 2 },
-    slotRequirementId: [],
+    tagRequirementId: [],
     description: "A generic FormTag1."
   },
   {
@@ -61,7 +61,7 @@ const TAGS: TagModel[] = [
     type: TagType.FormTag,
     minRarity: Rarity.Uncommon,
     slotCost: { value: 4 },
-    slotRequirementId: [],
+    tagRequirementId: [],
     description: "A special FormTag2."
   },
   {
@@ -70,7 +70,7 @@ const TAGS: TagModel[] = [
     type: TagType.FormTag,
     minRarity: Rarity.VeryRare,
     slotCost: { value: 5 },
-    slotRequirementId: [],
+    tagRequirementId: [],
     description: "A unique FormTag3."
   },
 
@@ -81,7 +81,7 @@ const TAGS: TagModel[] = [
     type: TagType.EffectTag,
     minRarity: Rarity.Rare,
     slotCost: { value: 3 },
-    slotRequirementId: [1], // Requires FormTag1
+    tagRequirementId: [1], // Requires FormTag1
     description: "An effect that works with FormTag1."
   },
   {
@@ -90,7 +90,7 @@ const TAGS: TagModel[] = [
     type: TagType.EffectTag,
     minRarity: Rarity.Legendary,
     slotCost: { takeAll: true },
-    slotRequirementId: [1, 2], // Requires FormTag1 and FormTag2
+    tagRequirementId: [1, 2], // Requires FormTag1 and FormTag2
     description: "An ultimate effect that requires both FormTag1 and FormTag2."
   },
   {
@@ -99,7 +99,7 @@ const TAGS: TagModel[] = [
     type: TagType.EffectTag,
     minRarity: Rarity.Uncommon,
     slotCost: { value: 1 },
-    slotRequirementId: [3], // Requires FormTag3
+    tagRequirementId: [3], // Requires FormTag3
     description: "A unique effect that is compatible with FormTag3."
   },
 
@@ -110,7 +110,7 @@ const TAGS: TagModel[] = [
     type: TagType.EffectTag,
     minRarity: Rarity.Common,
     slotCost: { value: 2 },
-    slotRequirementId: [],
+    tagRequirementId: [],
     description: "An effect that doesn't require any form tags."
   },
   {
@@ -119,7 +119,7 @@ const TAGS: TagModel[] = [
     type: TagType.EffectTag,
     minRarity: Rarity.Rare,
     slotCost: { takeAll: true },
-    slotRequirementId: [],
+    tagRequirementId: [],
     description: "A powerful effect that consumes all available slots."
   },
 ];

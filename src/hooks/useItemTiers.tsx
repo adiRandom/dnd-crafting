@@ -1,18 +1,17 @@
 import { useSignal, useTask$ } from "@builder.io/qwik";
-import { getTierInfo } from "~/data/repository";
+import { getTierInfo } from "~/data/api";
 import { ItemTierInfo } from "~/models/itemTierInfo";
 import { Rarity } from "~/models/rarity";
 
 export function useItemTiers() {
-  const tiers = useSignal<Record<Rarity, ItemTierInfo> | null>(null);
-  useTask$(async () => {
-      // Get item tiers
-    if (tiers.value) return
-    
-    const tierInfo = await getTierInfo()
-    tiers.value = tierInfo
-  })
+    const tiers = useSignal<Record<Rarity, ItemTierInfo> | null>(null);
+    useTask$(async () => {
+        // Get item tiers
+        if (tiers.value) return;
 
-  return tiers
+        const tierInfo = await getTierInfo();
+        tiers.value = tierInfo;
+    });
+
+    return tiers;
 }
-

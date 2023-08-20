@@ -1,10 +1,23 @@
-import { Rarity } from "~/models/rarity";
+import type { Rarity } from "~/models/rarity";
+import { RARITIES } from "~/models/rarity";
 import { useItemTiers } from "./useItemTiers";
+import type { Signal} from "@builder.io/qwik";
 import { useSignal, useTask$ } from "@builder.io/qwik";
+import type { ItemTierInfo } from "~/models/itemTierInfo";
 
-export function useItemTier(rarity: Rarity | null) {
+
+export function useItemTier(
+    rarity: Rarity | null
+): Readonly<Signal<ItemTierInfo>>;
+export function useItemTier(
+    rarityIndex: number | null
+): Readonly<Signal<ItemTierInfo>>;
+export function useItemTier(rarity: Rarity | null | number) {
     const itemTiers = useItemTiers();
-    const tier = useSignal(rarity ? itemTiers.value?.[rarity] ?? null : null);
+    const decodedRarity = decodeRarity(rarity)
+    const tier = useSignal(
+        decodedRarity ? itemTiers.value?.[decodedRarity] ?? null : null
+    );
 
     useTask$(({ track }) => {
         track(() => itemTiers.value);
@@ -15,13 +28,19 @@ export function useItemTier(rarity: Rarity | null) {
             return;
         }
 
-        if (!rarity) {
+        if (!decodedRarity) {
             tier.value = null;
             return;
         }
 
-        tier.value = itemTiers.value[rarity];
+        tier.value = itemTiers.value[decodedRarity];
     });
 
     return tier;
+}
+
+function decodeRarity(rarity: Rarity | null | number) {
+    if (rarity === null) return null;
+    if (typeof rarity === "number") return RARITIES[rarity];
+    return rarity;
 }
