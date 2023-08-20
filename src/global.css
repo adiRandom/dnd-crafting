@@ -18,7 +18,8 @@
     --purple-container-bg: rgba(27, 7, 38, 0.85);
     --primary-btn: rgba(66, 32, 69, 1);
     --primary-btn-transparent: rgba(66, 32, 69, 0);
-    --text-on-purple: rgba(250, 202, 202, 1);
+    --primary-text: rgba(250, 202, 202, 1);
+    --disabled-text: rgb(124, 108, 108);
     --button-glow: rgb(100, 61, 105);
 
     --separator: rgba(250, 202, 202, 1);
@@ -63,6 +64,6 @@ body {
     font-family: "PT Serif", serif;
 }
 
-*{
+* {
     font-family: "PT Serif", serif;
 }

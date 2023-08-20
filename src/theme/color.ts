@@ -1,0 +1,10 @@
+export const PURPLE_CONTAINER_BG = "rgba(27, 7, 38, 0.85)";
+export const PRIMARY_BTN = "rgba(66, 32, 69, 1)";
+export const PRIMARY_BORDER = "rgba(66, 32, 69, 1)"
+export const DISABLED_BORDER = "rgba(81, 69, 82, 1)"
+export const PRIMARY_HOVER = "rgba(66, 32, 69, 0.5)"
+export const PRIMARY_BTN_TRANSPARENT = "rgba(66, 32, 69, 0)";
+export const PRIMARY_TEXT = "rgba(250, 202, 202, 1)";
+export const DISABLED_TEXT = "rgba(124, 108, 108, 1)"
+export const BUTTON_GLOW = "rgb(100, 61, 105)";
+export const SEPARATOR = "rgba(250, 202, 202, 1)";

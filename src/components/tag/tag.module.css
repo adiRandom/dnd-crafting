@@ -20,4 +20,9 @@
 .tagName{
   font-size: 2rem;
   z-index: 2;
+  color: var(--primary-text)
+}
+
+.tagNameDisabled{
+  color: var(--disabled-text)!important
 }

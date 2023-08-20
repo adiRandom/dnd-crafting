@@ -62,7 +62,7 @@
     margin-bottom: 2rem;
     margin-top: 2rem;
     text-transform: capitalize;
-    color: var(--text-on-purple);
+    color: var(--primary-text);
 }
 
 .infoHeader {
@@ -72,13 +72,13 @@
     margin-top: 2rem;
     text-transform: capitalize;
     width: 100%;
-    color: var(--text-on-purple);
+    color: var(--primary-text);
 }
 
 .infoItem {
     width: 100%;
     font-size: 1.5rem;
-    color: var(--text-on-purple);
+    color: var(--primary-text);
 }
 
 .reqContainer {
@@ -102,6 +102,6 @@
 }
 
 .tagHeader {
-    color: var(--text-on-purple);
+    color: var(--primary-text);
     font-size: 2rem;
 }

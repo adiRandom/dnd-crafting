@@ -16,7 +16,7 @@ export default component$(() => {
                 
                     tag={tags.value[0]}
                     isSelected={false}
-                    canBeSelected={true}
+                    canBeSelected={false}
                     onHover$={() => {}}
                 />
             </div>
