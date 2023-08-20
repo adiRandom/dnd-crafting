@@ -1,6 +1,6 @@
 import type { Rarity } from "./rarity";
 
-export type Tag = {
+export type TagModel = {
   id: number;
   name: string;
   type: TagType;

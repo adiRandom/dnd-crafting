@@ -1,5 +1,6 @@
 import { ItemTierInfo } from "~/models/itemTierInfo";
 import { Rarity } from "~/models/rarity";
+import { TagModel, TagType } from "~/models/tags";
 
 const ITEM_TIERS: Record<Rarity, ItemTierInfo> = {
   [Rarity.Common]: {
@@ -43,12 +44,103 @@ const ITEM_TIERS: Record<Rarity, ItemTierInfo> = {
   }
 }
 
+const TAGS: TagModel[] = [
+  // FormTags
+  {
+    id: 1,
+    name: "FormTag1",
+    type: TagType.FormTag,
+    minRarity: Rarity.Common,
+    slotCost: { value: 2 },
+    slotRequirementId: [],
+    description: "A generic FormTag1."
+  },
+  {
+    id: 2,
+    name: "FormTag2",
+    type: TagType.FormTag,
+    minRarity: Rarity.Uncommon,
+    slotCost: { value: 4 },
+    slotRequirementId: [],
+    description: "A special FormTag2."
+  },
+  {
+    id: 3,
+    name: "FormTag3",
+    type: TagType.FormTag,
+    minRarity: Rarity.VeryRare,
+    slotCost: { value: 5 },
+    slotRequirementId: [],
+    description: "A unique FormTag3."
+  },
+
+  // EffectTags with Requirements
+  {
+    id: 4,
+    name: "EffectTag1",
+    type: TagType.EffectTag,
+    minRarity: Rarity.Rare,
+    slotCost: { value: 3 },
+    slotRequirementId: [1], // Requires FormTag1
+    description: "An effect that works with FormTag1."
+  },
+  {
+    id: 5,
+    name: "EffectTag2",
+    type: TagType.EffectTag,
+    minRarity: Rarity.Legendary,
+    slotCost: { takeAll: true },
+    slotRequirementId: [1, 2], // Requires FormTag1 and FormTag2
+    description: "An ultimate effect that requires both FormTag1 and FormTag2."
+  },
+  {
+    id: 6,
+    name: "EffectTag3",
+    type: TagType.EffectTag,
+    minRarity: Rarity.Uncommon,
+    slotCost: { value: 1 },
+    slotRequirementId: [3], // Requires FormTag3
+    description: "A unique effect that is compatible with FormTag3."
+  },
+
+  // EffectTags without Requirements
+  {
+    id: 7,
+    name: "EffectTag4",
+    type: TagType.EffectTag,
+    minRarity: Rarity.Common,
+    slotCost: { value: 2 },
+    slotRequirementId: [],
+    description: "An effect that doesn't require any form tags."
+  },
+  {
+    id: 8,
+    name: "EffectTag5",
+    type: TagType.EffectTag,
+    minRarity: Rarity.Rare,
+    slotCost: { takeAll: true },
+    slotRequirementId: [],
+    description: "A powerful effect that consumes all available slots."
+  },
+];
+
+
+
 let tierInfo: Record<Rarity, ItemTierInfo> | null = null;
+let tags: TagModel[] | null = null;
 
 export async function getTierInfo(): Promise<Record<Rarity, ItemTierInfo>> {
   if (tierInfo === null) {
-    tierInfo =  ITEM_TIERS
-  } 
-  
+    tierInfo = ITEM_TIERS
+  }
+
   return Promise.resolve(tierInfo)
+}
+
+export async function getTags(/*toolId: number*/): Promise<TagModel[]> {
+  if (tags === null) {
+    tags = TAGS
+  }
+
+  return Promise.resolve(tags)
 }

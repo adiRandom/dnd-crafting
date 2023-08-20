@@ -15,7 +15,7 @@ export type RarityButtonGroupProps = {
 export const RarityButtonGroup = component$((props: RarityButtonGroupProps) => {
     const itemTiers = useItemTiers()
 
-    if (itemTiers.value) {
+    if (itemTiers.value === null) {
         return null
     }
 
