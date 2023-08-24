@@ -1,5 +1,5 @@
 import type { Rarity } from "./rarity";
-import { TagAvailability, TagAvailabilityWithReason } from "./tagAvailability";
+import {TagAvailabilityWithReason } from "./tagAvailability";
 
 export type TagModel = {
   id: number;

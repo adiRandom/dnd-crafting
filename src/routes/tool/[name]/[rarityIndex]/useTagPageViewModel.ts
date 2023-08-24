@@ -15,34 +15,27 @@ export function useTagPageViewModel() {
   const effectTagsWithAvailability = useSignal<TagWithAvailability[]>([])
 
   const location = useLocation();
+  const toolName = location.params.name;
   const rarityIndex = Number.parseInt(location.params.rarityIndex);
   const tierInfo = useItemTier(rarityIndex);
 
-  const remainedSlots = useSignal(tierInfo.value.tags);
+  const remainedSlots = useSignal(tierInfo.value?.tags);
   const isATakeAllTagSelected = useSignal(false);
 
   const showInfoForTag = useSignal<TagWithAvailability | undefined>(
     undefined
   );
 
-  useTask$(async ({ track }) => {
-    track(() => effectTags.value)
-    track(() => selectedFormTagId.value)
+  const formatedCostInfoTooltip = doesTagTakeAllSlots(showInfoForTag.value?.slotCost ?? { value: 0 }) ?
+    "Takes all slots" : (showInfoForTag.value?.slotCost as any)?.value?.toString() ?? "0"
 
-    const mappedTags = (effectTags.value ?? []).map(async (tag) => {
-      const availability = await getTagAvailability$(tag)
-      return { ...tag, availability } as TagWithAvailability;
-    })
-
-    effectTagsWithAvailability.value = await Promise.all(mappedTags);
-  })
 
   const getTagAvailability$ = $((tag: TagModel) => {
     const status: TagAvailabilityWithReason[] = []
 
     if (isATakeAllTagSelected.value
       || (!doesTagTakeAllSlots(tag.slotCost)
-        && remainedSlots.value < tag.slotCost.value)) {
+        && (remainedSlots.value ?? 0) < tag.slotCost.value)) {
       status.push(
         {
           availability: TagAvailability.NotEnoughSlots,
@@ -86,7 +79,20 @@ export function useTagPageViewModel() {
       : [{ availability: TagAvailability.Available, reason: undefined }]
   })
 
-  const onHover = $(
+  useTask$(async ({ track }) => {
+    track(() => effectTags.value)
+    track(() => selectedFormTagId.value)
+
+    const mappedTags = (effectTags.value ?? []).map(async (tag) => {
+      const availability = await getTagAvailability$(tag)
+      return { ...tag, availability } as TagWithAvailability;
+    })
+
+    effectTagsWithAvailability.value = await Promise.all(mappedTags);
+  })
+
+
+  const onEffectTagHover = $(
     (tag: TagWithAvailability, isOver: boolean) => {
       if (isOver) {
         showInfoForTag.value = tag;
@@ -96,7 +102,33 @@ export function useTagPageViewModel() {
     }
   );
 
-  return { onHover, effectTagsWithAvailability, formTags, showInfoForTag, selectedFormTagId }
+  const onFormTagHover = $((tag: TagModel, isOver: boolean) => {
+    onEffectTagHover(
+      {
+        ...tag,
+        availability: [
+          {
+            availability:
+              TagAvailability.Available,
+            reason: undefined,
+          },
+        ],
+      } as TagWithAvailability,
+      isOver)
+  })
+
+
+  return {
+    onEffectTagHover,
+    onFormTagHover,
+    effectTagsWithAvailability,
+    formTags,
+    showInfoForTag,
+    selectedFormTagId,
+    toolName,
+    rarityLevel: RARITIES.find((_, index) => rarityIndex === index)
+    , formatedCostInfoTooltip
+  }
 
 }
 

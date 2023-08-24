@@ -1,20 +1,21 @@
 import type { Rarity } from "~/models/rarity";
 import { RARITIES } from "~/models/rarity";
 import { useItemTiers } from "./useItemTiers";
-import type { Signal} from "@builder.io/qwik";
+import type { Signal } from "@builder.io/qwik";
 import { useSignal, useTask$ } from "@builder.io/qwik";
 import type { ItemTierInfo } from "~/models/itemTierInfo";
 
-
 export function useItemTier(
     rarity: Rarity | null
-): Readonly<Signal<ItemTierInfo>>;
+): Readonly<Signal<ItemTierInfo | null>>;
 export function useItemTier(
     rarityIndex: number | null
-): Readonly<Signal<ItemTierInfo>>;
+): Readonly<Signal<ItemTierInfo | null>>;
 export function useItemTier(rarity: Rarity | null | number) {
     const itemTiers = useItemTiers();
-    const decodedRarity = decodeRarity(rarity)
+    console.log("itemTiers", itemTiers);
+    const decodedRarity = decodeRarity(rarity);
+    console.log("decodedRarity", decodedRarity);
     const tier = useSignal(
         decodedRarity ? itemTiers.value?.[decodedRarity] ?? null : null
     );

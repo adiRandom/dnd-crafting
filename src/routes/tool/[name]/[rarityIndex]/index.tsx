@@ -1,47 +1,59 @@
 import { component$ } from "@builder.io/qwik";
 import Tag from "~/components/tag/tag";
-import { TagAvailability } from "~/models/tagAvailability";
 import { useTagPageViewModel } from "./useTagPageViewModel";
+import { capitalize } from "~/lib/stringUtils";
+import styles from "./styles.module.css";
 
 export default component$(() => {
     const {
         formTags,
         effectTagsWithAvailability,
-        onHover,
+        onFormTagHover,
         showInfoForTag,
         selectedFormTagId,
+        rarityLevel,
+        toolName,
+        formatedCostInfoTooltip,
     } = useTagPageViewModel();
     if (formTags.value === null) {
         return <div>Loading...</div>;
     }
 
     return (
-        <div>
-            <h1>Select a form tag</h1>
-            <div>
-                <div>
+        <div class={styles.main}>
+            <h1 class={styles.title}>Select a form tag</h1>
+            <h2 class={styles.subtitle}>
+                {capitalize(toolName)} Tools ➡ {rarityLevel}
+            </h2>
+            <div class={styles.content}>
+                <div class={styles.tags}>
                     {formTags.value.map((formTag) => (
-                        <Tag
-                            key={formTag.id}
-                            tag={formTag}
-                            canBeSelected
-                            isSelected={formTag.id === selectedFormTagId.value}
-                            onHover$={(isOver) =>
-                                onHover(
-                                    formTag,
-                                    TagAvailability.Available,
-                                    isOver
-                                )
-                            }
-                        />
+                        <div class={styles.tagContainer} key={formTag.id}>
+                            <Tag
+                                tag={formTag}
+                                canBeSelected
+                                isSelected={
+                                    formTag.id === selectedFormTagId.value
+                                }
+                                onHover$={(isOver) =>
+                                    onFormTagHover(formTag, isOver)
+                                }
+                            />
+                        </div>
                     ))}
                 </div>
-                <div>
+
+                <div class={styles.info}>
                     {showInfoForTag.value && (
-                        <div>
-                            <h2>{showInfoForTag.value.name}</h2>
-                            <h3>{`Cost: ${showInfoForTag.value.slotCost}`}</h3>
+                        <div class={styles.infoColumn}>
+                            <h2 class={styles.tagName}>
+                                {showInfoForTag.value.name}
+                            </h2>
+                            <h3
+                                class={styles.cost}
+                            >{`Cost: ${formatedCostInfoTooltip}`}</h3>
                             <div
+                                class={styles.description}
                                 dangerouslySetInnerHTML={
                                     showInfoForTag.value.description
                                 }

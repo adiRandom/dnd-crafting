@@ -1,8 +1,8 @@
 import { component$, useSignal } from "@builder.io/qwik";
-import { useLocation } from "@builder.io/qwik-city";
+import { Link, useLocation } from "@builder.io/qwik-city";
 import useIntroModal from "~/hooks/useIntroModal";
 import styles from "./styles.module.css";
-import type { Rarity } from "~/models/rarity";
+import { RARITIES, Rarity } from "~/models/rarity";
 import { RarityButtonGroup } from "~/components/ui/buttonGroup/rarityButtonGroup/rarityButtonGroup";
 import { capitalize } from "~/lib/stringUtils";
 import { PrimaryButton } from "~/components/ui/buttons/primaryButton";
@@ -63,7 +63,8 @@ export default component$(() => {
                         <p class={styles.infoItem}>
                             {`DC to acquire IP: ${
                                 selectedRarity.value
-                                    ? itemTiers.value[selectedRarity.value].dcMin
+                                    ? itemTiers.value[selectedRarity.value]
+                                          .dcMin
                                     : ""
                             }`}
                             {selectedRarity.value &&
@@ -76,7 +77,8 @@ export default component$(() => {
                         </p>
                         <p class={styles.infoItem}>{`Time to craft: ${
                             selectedRarity.value
-                                ? itemTiers.value[selectedRarity.value].timeInDays
+                                ? itemTiers.value[selectedRarity.value]
+                                      .timeInDays
                                 : ""
                         }`}</p>
                     </div>
@@ -87,7 +89,16 @@ export default component$(() => {
                                 ? itemTiers.value[selectedRarity.value].tags
                                 : ""}
                         </h2>
-                        <PrimaryButton label="Fill Tags" onClick$={() => {}} />
+                        <Link
+                            href={`/tool/${toolName}/${RARITIES.indexOf(
+                                selectedRarity.value ?? Rarity.Common
+                            )}`}
+                        >
+                            <PrimaryButton
+                                label="Fill Tags"
+                                onClick$={() => {}}
+                            />
+                        </Link>
                     </div>
                 </div>
             </div>

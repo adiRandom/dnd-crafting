@@ -23,6 +23,9 @@
     --button-glow: rgb(100, 61, 105);
 
     --separator: rgba(250, 202, 202, 1);
+
+    --scroll-thumb:rgba(100, 61, 105, 0.548);
+    --scroll-track:rgba(66, 32, 69, 1);
 }
 
 html {
