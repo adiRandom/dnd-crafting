@@ -10,10 +10,13 @@ export default component$(() => {
         effectTagsWithAvailability,
         onFormTagHover,
         showInfoForTag,
-        selectedFormTagId,
+        selectedFormTag,
         rarityLevel,
         toolName,
         formatedCostInfoTooltip,
+        remainingSlots,
+        allSlots,
+        onFormTagClick,
     } = useTagPageViewModel();
     if (formTags.value === null) {
         return <div>Loading...</div>;
@@ -25,16 +28,37 @@ export default component$(() => {
             <h2 class={styles.subtitle}>
                 {capitalize(toolName)} Tools ➡ {rarityLevel}
             </h2>
+            <h2 class={styles.slots}>
+                Slots : {remainingSlots.value} / {allSlots}
+            </h2>
+            <div
+                class={{
+                    [styles.selectedTagContainer]: true,
+                    [styles.selectedTagContainerWithContent]:
+                        selectedFormTag.value !== null,
+                }}
+            >
+                {selectedFormTag.value && (
+                    <Tag
+                        tag={selectedFormTag.value}
+                        canBeSelected
+                        isSelected={true}
+                        onHover$={() => {}}
+                    ></Tag>
+                )}
+            </div>
             <div class={styles.content}>
                 <div class={styles.tags}>
                     {formTags.value.map((formTag) => (
-                        <div class={styles.tagContainer} key={formTag.id}>
+                        <div
+                            class={styles.tagContainer}
+                            onClick$={() => onFormTagClick(formTag)}
+                            key={formTag.id}
+                        >
                             <Tag
                                 tag={formTag}
                                 canBeSelected
-                                isSelected={
-                                    formTag.id === selectedFormTagId.value
-                                }
+                                isSelected={false}
                                 onHover$={(isOver) =>
                                     onFormTagHover(formTag, isOver)
                                 }

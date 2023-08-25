@@ -9,7 +9,7 @@ import type { TagModel, TagWithAvailability } from "~/models/tags";
 import { doesTagTakeAllSlots } from "~/models/tags";
 
 export function useTagPageViewModel() {
-  const selectedFormTagId = useSignal<number | null>(null);
+  const selectedFormTag = useSignal<TagModel | null>(null);
 
   const { formTags, effectTags } = useTags();
   const effectTagsWithAvailability = useSignal<TagWithAvailability[]>([])
@@ -19,12 +19,29 @@ export function useTagPageViewModel() {
   const rarityIndex = Number.parseInt(location.params.rarityIndex);
   const tierInfo = useItemTier(rarityIndex);
 
-  const remainedSlots = useSignal(tierInfo.value?.tags);
+  const remainingSlots = useSignal(tierInfo.value?.tags);
+  const calculatedRemainingSlots = useSignal(remainingSlots.value);
   const isATakeAllTagSelected = useSignal(false);
 
   const showInfoForTag = useSignal<TagWithAvailability | undefined>(
     undefined
   );
+
+  useTask$(async ({ track }) => {
+    track(() => tierInfo.value)
+    remainingSlots.value = tierInfo.value?.tags
+  })
+
+  useTask$(async ({ track }) => {
+    track(() => remainingSlots.value)
+    track(() => isATakeAllTagSelected.value)
+
+    if (isATakeAllTagSelected.value) {
+      calculatedRemainingSlots.value = 0;
+    } else {
+      calculatedRemainingSlots.value = remainingSlots.value;
+    }
+})
 
   const formatedCostInfoTooltip = doesTagTakeAllSlots(showInfoForTag.value?.slotCost ?? { value: 0 }) ?
     "Takes all slots" : (showInfoForTag.value?.slotCost as any)?.value?.toString() ?? "0"
@@ -35,7 +52,7 @@ export function useTagPageViewModel() {
 
     if (isATakeAllTagSelected.value
       || (!doesTagTakeAllSlots(tag.slotCost)
-        && (remainedSlots.value ?? 0) < tag.slotCost.value)) {
+        && (remainingSlots.value ?? 0) < tag.slotCost.value)) {
       status.push(
         {
           availability: TagAvailability.NotEnoughSlots,
@@ -56,7 +73,7 @@ export function useTagPageViewModel() {
 
     if (
       tag.tagRequirementId.find(tagId =>
-        selectedFormTagId.value === tagId
+        selectedFormTag.value?.id === tagId
       ) === undefined
     ) {
       const requirementsAsString = tag.tagRequirementId.reduce(
@@ -81,7 +98,7 @@ export function useTagPageViewModel() {
 
   useTask$(async ({ track }) => {
     track(() => effectTags.value)
-    track(() => selectedFormTagId.value)
+    track(() => selectedFormTag.value)
 
     const mappedTags = (effectTags.value ?? []).map(async (tag) => {
       const availability = await getTagAvailability$(tag)
@@ -117,18 +134,33 @@ export function useTagPageViewModel() {
       isOver)
   })
 
+  const onFormTagClick = $((tag: TagModel) => {
+    selectedFormTag.value = tag;
+    if (
+      !doesTagTakeAllSlots(tag.slotCost)
+      && remainingSlots.value !== undefined
+    ) {
+      console.log(tag.slotCost)
+      remainingSlots.value =
+        remainingSlots.value - tag.slotCost.value;
+    }
+  })
 
-  return {
-    onEffectTagHover,
-    onFormTagHover,
-    effectTagsWithAvailability,
-    formTags,
-    showInfoForTag,
-    selectedFormTagId,
-    toolName,
-    rarityLevel: RARITIES.find((_, index) => rarityIndex === index)
-    , formatedCostInfoTooltip
+
+
+    return {
+      onEffectTagHover,
+      onFormTagHover,
+      effectTagsWithAvailability,
+      formTags,
+      showInfoForTag,
+      selectedFormTag,
+      toolName,
+      rarityLevel: RARITIES.find((_, index) => rarityIndex === index)
+      , formatedCostInfoTooltip,
+      remainingSlots: calculatedRemainingSlots,
+      allSlots: tierInfo.value?.tags,
+      onFormTagClick,
+    }
   }
-
-}
 

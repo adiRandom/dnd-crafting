@@ -16,7 +16,7 @@
 .subtitle {
     font-size: 2rem;
     margin: 16px 0px;
-    color: var(--primary-text);
+    color: var(--accent-text);
 }
 
 .content {
@@ -97,4 +97,26 @@
     width: 100%;
     font-size: 1.5rem;
     color: var(--primary-text);
+}
+
+.slots {
+    font-size: 2rem;
+    color: var(--accent-text);
+    position: absolute;
+    right: 64px;
+    top: 64px;
+}
+
+.selectedTagContainer {
+    width: 100%;
+    transition: all 0.6s ease-out;
+    transform: scale(0);
+    opacity: 0;
+    margin-top: 32px;
+}
+
+.selectedTagContainerWithContent {
+    transform: scale(1)!important;
+    opacity: 1!important;
+    height: 96px;
 }
