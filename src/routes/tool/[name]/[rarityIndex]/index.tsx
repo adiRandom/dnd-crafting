@@ -6,8 +6,7 @@ import styles from "./styles.module.css";
 
 export default component$(() => {
     const {
-        formTags,
-        effectTagsWithAvailability,
+        tagsToShow,
         onFormTagHover,
         showInfoForTag,
         selectedFormTag,
@@ -18,7 +17,7 @@ export default component$(() => {
         allSlots,
         onFormTagClick,
     } = useTagPageViewModel();
-    if (formTags.value === null) {
+    if (tagsToShow.value.length === 0) {
         return <div>Loading...</div>;
     }
 
@@ -49,7 +48,7 @@ export default component$(() => {
             </div>
             <div class={styles.content}>
                 <div class={styles.tags}>
-                    {formTags.value.map((formTag) => (
+                    {tagsToShow.value.map((formTag) => (
                         <div
                             class={styles.tagContainer}
                             onClick$={() => onFormTagClick(formTag)}

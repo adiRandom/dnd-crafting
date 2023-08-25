@@ -23,6 +23,8 @@ export function useTagPageViewModel() {
   const calculatedRemainingSlots = useSignal(remainingSlots.value);
   const isATakeAllTagSelected = useSignal(false);
 
+  const tagsToShow = useSignal<TagModel[]>([])
+
   const showInfoForTag = useSignal<TagWithAvailability | undefined>(
     undefined
   );
@@ -41,7 +43,19 @@ export function useTagPageViewModel() {
     } else {
       calculatedRemainingSlots.value = remainingSlots.value;
     }
-})
+  })
+
+  useTask$(async ({ track }) => {
+    track(() => effectTags.value)
+    track(() => selectedFormTag.value)
+    track(() => formTags.value)
+
+    if (selectedFormTag.value) {
+      tagsToShow.value = effectTags.value ?? []
+    } else {
+      tagsToShow.value = formTags.value ?? []
+    }
+  })
 
   const formatedCostInfoTooltip = doesTagTakeAllSlots(showInfoForTag.value?.slotCost ?? { value: 0 }) ?
     "Takes all slots" : (showInfoForTag.value?.slotCost as any)?.value?.toString() ?? "0"
@@ -148,19 +162,18 @@ export function useTagPageViewModel() {
 
 
 
-    return {
-      onEffectTagHover,
-      onFormTagHover,
-      effectTagsWithAvailability,
-      formTags,
-      showInfoForTag,
-      selectedFormTag,
-      toolName,
-      rarityLevel: RARITIES.find((_, index) => rarityIndex === index)
-      , formatedCostInfoTooltip,
-      remainingSlots: calculatedRemainingSlots,
-      allSlots: tierInfo.value?.tags,
-      onFormTagClick,
-    }
+  return {
+    onEffectTagHover,
+    onFormTagHover,
+    tagsToShow, 
+    showInfoForTag,
+    selectedFormTag,
+    toolName,
+    rarityLevel: RARITIES.find((_, index) => rarityIndex === index)
+    , formatedCostInfoTooltip,
+    remainingSlots: calculatedRemainingSlots,
+    allSlots: tierInfo.value?.tags,
+    onFormTagClick,
   }
+}
 
