@@ -7,7 +7,7 @@ import styles from "./styles.module.css";
 export default component$(() => {
     const {
         tagsToShow,
-        onFormTagHover,
+        onHover,
         showInfoForTag,
         selectedFormTag,
         rarityLevel,
@@ -51,7 +51,11 @@ export default component$(() => {
                     {tagsToShow.value.map((formTag) => (
                         <div
                             class={styles.tagContainer}
-                            onClick$={() => onFormTagClick(formTag)}
+                            onClick$={() => {
+                                if (selectedFormTag.value === null) {
+                                    onFormTagClick(formTag);
+                                }
+                            }}
                             key={formTag.id}
                         >
                             <Tag
@@ -59,7 +63,7 @@ export default component$(() => {
                                 canBeSelected
                                 isSelected={false}
                                 onHover$={(isOver) =>
-                                    onFormTagHover(formTag, isOver)
+                                    onHover(formTag, isOver)
                                 }
                             />
                         </div>
@@ -74,17 +78,20 @@ export default component$(() => {
                             </h2>
                             <h3
                                 class={styles.cost}
-                            >{`Cost: ${formatedCostInfoTooltip}`}</h3>
+                            >{`Cost: ${formatedCostInfoTooltip.value}`}</h3>
                             <div
                                 class={styles.description}
                                 dangerouslySetInnerHTML={
                                     showInfoForTag.value.description
                                 }
                             />
-                            <div>
+                            <div class={styles.missingContainer}>
                                 {showInfoForTag.value.availability.map(
                                     ({ availability, reason }) => (
-                                        <h3 key={availability}>
+                                        <h3
+                                            class={styles.missing}
+                                            key={availability}
+                                        >
                                             {reason ?? ""}
                                         </h3>
                                     )

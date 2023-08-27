@@ -120,3 +120,14 @@
     opacity: 1!important;
     height: 96px;
 }
+
+.missing{
+    color: var(--warning-text);
+    font-size: 1.5rem;
+    font-style: italic;
+    width: 100%;
+}
+
+.missingContainer{
+    width: 100%;
+}

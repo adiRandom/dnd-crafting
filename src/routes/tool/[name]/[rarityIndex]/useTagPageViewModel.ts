@@ -1,4 +1,4 @@
-import { useSignal, useTask$, $ } from "@builder.io/qwik";
+import { useSignal, useTask$, $, useComputed$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { useItemTier } from "~/hooks/useItemTier";
 import { useTags } from "~/hooks/useTags";
@@ -20,53 +20,64 @@ export function useTagPageViewModel() {
   const tierInfo = useItemTier(rarityIndex);
 
   const remainingSlots = useSignal(tierInfo.value?.tags);
-  const calculatedRemainingSlots = useSignal(remainingSlots.value);
   const isATakeAllTagSelected = useSignal(false);
 
-  const tagsToShow = useSignal<TagModel[]>([])
-
-  const showInfoForTag = useSignal<TagWithAvailability | undefined>(
-    undefined
-  );
 
   useTask$(async ({ track }) => {
     track(() => tierInfo.value)
     remainingSlots.value = tierInfo.value?.tags
   })
 
-  useTask$(async ({ track }) => {
-    track(() => remainingSlots.value)
-    track(() => isATakeAllTagSelected.value)
-
+  const calculatedRemainingSlots = useComputed$(() => {
     if (isATakeAllTagSelected.value) {
-      calculatedRemainingSlots.value = 0;
+      return 0;
     } else {
-      calculatedRemainingSlots.value = remainingSlots.value;
+      return remainingSlots.value;
     }
   })
 
-  useTask$(async ({ track }) => {
-    track(() => effectTags.value)
-    track(() => selectedFormTag.value)
-    track(() => formTags.value)
 
+  const tagsToShow = useComputed$(() => {
     if (selectedFormTag.value) {
-      tagsToShow.value = effectTags.value ?? []
+      return effectTagsWithAvailability.value
     } else {
-      tagsToShow.value = formTags.value ?? []
+      return formTags.value?.map((tag) => ({
+        ...tag,
+        availability: [
+          {
+            availability:
+              TagAvailability.Available,
+            reason: undefined,
+          },
+        ],
+      }) as TagWithAvailability) ?? []
     }
   })
 
-  const formatedCostInfoTooltip = doesTagTakeAllSlots(showInfoForTag.value?.slotCost ?? { value: 0 }) ?
-    "Takes all slots" : (showInfoForTag.value?.slotCost as any)?.value?.toString() ?? "0"
 
+  const showInfoForTag = useSignal<TagWithAvailability | undefined>(
+    undefined
+  );
+
+
+  const formatedCostInfoTooltip = useComputed$(() =>
+    doesTagTakeAllSlots(showInfoForTag.value?.slotCost ?? { value: 0 })
+      ? "Takes all slots"
+      : (showInfoForTag.value?.slotCost as any)
+        ?.value?.toString() ?? "0"
+  )
+  
 
   const getTagAvailability$ = $((tag: TagModel) => {
     const status: TagAvailabilityWithReason[] = []
 
+    const hasAvailableSlots = !doesTagTakeAllSlots(tag.slotCost)
+      && (remainingSlots.value ?? 0) >= tag.slotCost.value
+    const hasAvailableSlotsForATakeAllTag = doesTagTakeAllSlots(tag.slotCost) && remainingSlots.value !== 0
+
     if (isATakeAllTagSelected.value
-      || (!doesTagTakeAllSlots(tag.slotCost)
-        && (remainingSlots.value ?? 0) < tag.slotCost.value)) {
+      || (!hasAvailableSlotsForATakeAllTag && !hasAvailableSlots)
+    ) {
       status.push(
         {
           availability: TagAvailability.NotEnoughSlots,
@@ -85,25 +96,34 @@ export function useTagPageViewModel() {
         })
     }
 
+
     if (
-      tag.tagRequirementId.find(tagId =>
+      tag.tagRequirementId.length !== 0 && tag.tagRequirementId.find(tagId =>
         selectedFormTag.value?.id === tagId
       ) === undefined
     ) {
+
       const requirementsAsString = tag.tagRequirementId.reduce(
         (acc, tagId) =>
           acc +
           (formTags.value?.find(
             (formTag) => formTag.id === tagId
-          ) ?? "??") +
+          )?.name ?? "??") +
           " / ",
         ""
       );
+
+      const trimmedRequirements = requirementsAsString.substring(
+        0,
+        requirementsAsString.length - 3
+      );
+
       status.push({
         availability: TagAvailability.FormTagMissing,
-        reason: `${TagAvailability.FormTagMissing}: ${requirementsAsString}`
+        reason: `${TagAvailability.FormTagMissing}: ${trimmedRequirements}`
       })
     }
+
 
     return status.length > 0
       ? status
@@ -133,19 +153,19 @@ export function useTagPageViewModel() {
     }
   );
 
-  const onFormTagHover = $((tag: TagModel, isOver: boolean) => {
+  const onFormTagHover = $((tag: TagWithAvailability, isOver: boolean) => {
     onEffectTagHover(
-      {
-        ...tag,
-        availability: [
-          {
-            availability:
-              TagAvailability.Available,
-            reason: undefined,
-          },
-        ],
-      } as TagWithAvailability,
-      isOver)
+      tag,
+      isOver
+    )
+  })
+
+  const onHover = $((tag: TagWithAvailability, isOver: boolean) => {
+    if (selectedFormTag.value) {
+      onEffectTagHover(tag, isOver)
+    } else {
+      onFormTagHover(tag, isOver)
+    }
   })
 
   const onFormTagClick = $((tag: TagModel) => {
@@ -163,9 +183,8 @@ export function useTagPageViewModel() {
 
 
   return {
-    onEffectTagHover,
-    onFormTagHover,
-    tagsToShow, 
+    onHover,
+    tagsToShow,
     showInfoForTag,
     selectedFormTag,
     toolName,

@@ -28,6 +28,7 @@
     --scroll-track:rgba(66, 32, 69, 1);
 
     --accent-text: rgb(139, 126, 193);
+    --warning-text: rgb(233, 90, 95);
 }
 
 html {
