@@ -3,6 +3,8 @@ import Tag from "~/components/tag/tag";
 import { useTagPageViewModel } from "./useTagPageViewModel";
 import { capitalize } from "~/lib/stringUtils";
 import styles from "./styles.module.css";
+import SearchIcon from "~/components/ui/icons/search";
+import { DISABLED_TEXT, ICON } from "~/theme/color";
 
 export default component$(() => {
     const {
@@ -62,16 +64,14 @@ export default component$(() => {
                                 tag={formTag}
                                 canBeSelected
                                 isSelected={false}
-                                onHover$={(isOver) =>
-                                    onHover(formTag, isOver)
-                                }
+                                onHover$={(isOver) => onHover(formTag, isOver)}
                             />
                         </div>
                     ))}
                 </div>
 
                 <div class={styles.info}>
-                    {showInfoForTag.value && (
+                    {showInfoForTag.value ? (
                         <div class={styles.infoColumn}>
                             <h2 class={styles.tagName}>
                                 {showInfoForTag.value.name}
@@ -97,6 +97,18 @@ export default component$(() => {
                                     )
                                 )}
                             </div>
+                        </div>
+                    ) : (
+                        <div
+                            class={[
+                                styles.infoColumn,
+                                styles.infoColumnEmptyState,
+                            ]}
+                        >
+                            <SearchIcon class={styles.emptyStateIcon} color={ICON} />
+                            <h2 class={styles.tagName}>
+                                Hover over a tag to see the details
+                            </h2>
                         </div>
                     )}
                 </div>

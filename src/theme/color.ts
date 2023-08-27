@@ -8,3 +8,4 @@ export const PRIMARY_TEXT = "rgba(250, 202, 202, 1)";
 export const DISABLED_TEXT = "rgba(124, 108, 108, 1)"
 export const BUTTON_GLOW = "rgb(100, 61, 105)";
 export const SEPARATOR = "rgba(250, 202, 202, 1)";
+export const ICON = "rgba(73, 14, 79, 0.27)"

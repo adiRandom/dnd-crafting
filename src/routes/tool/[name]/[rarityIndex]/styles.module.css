@@ -27,7 +27,7 @@
 }
 
 .tags {
-    flex: 6;
+    flex: 1;
     display: flex;
     gap: 16px 16px;
     padding-left: 16px;
@@ -54,7 +54,7 @@
 }
 
 .info {
-    flex: 4;
+    flex: 1;
     min-height: 40vh;
     max-height: 70vh;
     position: relative;
@@ -130,4 +130,20 @@
 
 .missingContainer{
     width: 100%;
+}
+
+.infoColumnEmptyState{
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.infoColumnEmptyState h2{
+    z-index: 1;
+}
+
+.emptyStateIcon{
+position: absolute;
+height: calc(100% - 64px);
+z-index: 0;
 }
