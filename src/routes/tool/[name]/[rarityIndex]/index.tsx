@@ -4,7 +4,9 @@ import { useTagPageViewModel } from "./useTagPageViewModel";
 import { capitalize } from "~/lib/stringUtils";
 import styles from "./styles.module.css";
 import SearchIcon from "~/components/ui/icons/search";
-import { DISABLED_TEXT, ICON } from "~/theme/color";
+import { ICON } from "~/theme/color";
+import { TagAvailability } from "~/models/tagAvailability";
+import { isTagAvailable } from "~/models/tags";
 
 export default component$(() => {
     const {
@@ -17,7 +19,8 @@ export default component$(() => {
         formatedCostInfoTooltip,
         remainingSlots,
         allSlots,
-        onFormTagClick,
+        onTagClick,
+        selectedEffectTagIds,
     } = useTagPageViewModel();
     if (tagsToShow.value.length === 0) {
         return <div>Loading...</div>;
@@ -50,21 +53,22 @@ export default component$(() => {
             </div>
             <div class={styles.content}>
                 <div class={styles.tags}>
-                    {tagsToShow.value.map((formTag) => (
+                    {tagsToShow.value.map((tag) => (
                         <div
                             class={styles.tagContainer}
                             onClick$={() => {
-                                if (selectedFormTag.value === null) {
-                                    onFormTagClick(formTag);
-                                }
+                                onTagClick(tag);
                             }}
-                            key={formTag.id}
+                            key={tag.id}
                         >
                             <Tag
-                                tag={formTag}
-                                canBeSelected
-                                isSelected={false}
-                                onHover$={(isOver) => onHover(formTag, isOver)}
+                                tag={tag}
+                                canBeSelected={
+                                    isTagAvailable(tag) ||
+                                    selectedEffectTagIds.value[tag.id]
+                                }
+                                isSelected={selectedEffectTagIds.value[tag.id]}
+                                onHover$={(isOver) => onHover(tag, isOver)}
                             />
                         </div>
                     ))}
@@ -105,7 +109,10 @@ export default component$(() => {
                                 styles.infoColumnEmptyState,
                             ]}
                         >
-                            <SearchIcon class={styles.emptyStateIcon} color={ICON} />
+                            <SearchIcon
+                                class={styles.emptyStateIcon}
+                                color={ICON}
+                            />
                             <h2 class={styles.tagName}>
                                 Hover over a tag to see the details
                             </h2>

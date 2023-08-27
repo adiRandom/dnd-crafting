@@ -6,7 +6,7 @@ import { RARITIES } from "~/models/rarity";
 import type { TagAvailabilityWithReason } from "~/models/tagAvailability";
 import { TagAvailability } from "~/models/tagAvailability";
 import type { TagModel, TagWithAvailability } from "~/models/tags";
-import { doesTagTakeAllSlots } from "~/models/tags";
+import { doesTagTakeAllSlots, isTagAvailable } from "~/models/tags";
 
 export function useTagPageViewModel() {
   const selectedFormTag = useSignal<TagModel | null>(null);
@@ -21,6 +21,8 @@ export function useTagPageViewModel() {
 
   const remainingSlots = useSignal(tierInfo.value?.tags);
   const isATakeAllTagSelected = useSignal(false);
+
+  const selectedEffectTagIds = useSignal<Record<number, boolean>>({});
 
 
   useTask$(async ({ track }) => {
@@ -66,9 +68,17 @@ export function useTagPageViewModel() {
       : (showInfoForTag.value?.slotCost as any)
         ?.value?.toString() ?? "0"
   )
-  
+
 
   const getTagAvailability$ = $((tag: TagModel) => {
+
+    if (selectedEffectTagIds.value[tag.id]) {
+      return [{
+        availability: TagAvailability.Available,
+        reason: undefined
+      }]
+    }
+
     const status: TagAvailabilityWithReason[] = []
 
     const hasAvailableSlots = !doesTagTakeAllSlots(tag.slotCost)
@@ -131,9 +141,9 @@ export function useTagPageViewModel() {
   })
 
   useTask$(async ({ track }) => {
-    track(() => effectTags.value)
-    track(() => selectedFormTag.value)
+    track(() => [effectTags.value, selectedFormTag.value, selectedEffectTagIds.value])
 
+    console.log("Calculating availability")
     const mappedTags = (effectTags.value ?? []).map(async (tag) => {
       const availability = await getTagAvailability$(tag)
       return { ...tag, availability } as TagWithAvailability;
@@ -174,12 +184,51 @@ export function useTagPageViewModel() {
       !doesTagTakeAllSlots(tag.slotCost)
       && remainingSlots.value !== undefined
     ) {
-      console.log(tag.slotCost)
       remainingSlots.value =
         remainingSlots.value - tag.slotCost.value;
     }
   })
 
+  const onEffectTagClick = $((tag: TagWithAvailability) => {
+    const isTagSelected = selectedEffectTagIds.value[tag.id]
+    if (!isTagAvailable(tag, isTagSelected)) {
+      return
+    }
+
+    const newSelectedEffectTagIds = { ...selectedEffectTagIds.value }
+
+    if (isTagSelected) {
+      delete newSelectedEffectTagIds[tag.id];
+
+      if (doesTagTakeAllSlots(tag.slotCost)) {
+        isATakeAllTagSelected.value = false;
+      }
+      else {
+        remainingSlots.value =
+          (remainingSlots.value ?? 0) + tag.slotCost.value;
+      }
+    } else {
+      newSelectedEffectTagIds[tag.id] = true;
+
+      if (doesTagTakeAllSlots(tag.slotCost)) {
+        isATakeAllTagSelected.value = true;
+      }
+      else {
+        remainingSlots.value =
+          (remainingSlots.value ?? 0) - tag.slotCost.value;
+      }
+    }
+
+    selectedEffectTagIds.value = newSelectedEffectTagIds;
+  })
+
+  const onTagClick = $((tag: TagWithAvailability) => {
+    if (selectedFormTag.value) {
+      onEffectTagClick(tag)
+    } else {
+      onFormTagClick(tag)
+    }
+  })
 
 
   return {
@@ -192,7 +241,8 @@ export function useTagPageViewModel() {
     , formatedCostInfoTooltip,
     remainingSlots: calculatedRemainingSlots,
     allSlots: tierInfo.value?.tags,
-    onFormTagClick,
+    onTagClick,
+    selectedEffectTagIds
   }
 }
 

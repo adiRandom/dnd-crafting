@@ -1,5 +1,5 @@
 import type { Rarity } from "./rarity";
-import {TagAvailabilityWithReason } from "./tagAvailability";
+import { TagAvailability, TagAvailabilityWithReason } from "./tagAvailability";
 
 export type TagModel = {
   id: number;
@@ -29,3 +29,8 @@ export type SlotCost = {
 export function doesTagTakeAllSlots(slotCost: SlotCost): slotCost is { takeAll: true } {
   return 'takeAll' in slotCost;
 }
+
+export function isTagAvailable(tag: TagWithAvailability, isTagSelected: boolean): boolean {
+  return isTagSelected || (tag.availability.length === 1
+    && tag.availability[0].availability === TagAvailability.Available)
+}  
