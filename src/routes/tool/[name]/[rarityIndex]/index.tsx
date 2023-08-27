@@ -63,10 +63,10 @@ export default component$(() => {
                         >
                             <Tag
                                 tag={tag}
-                                canBeSelected={
-                                    isTagAvailable(tag) ||
+                                canBeSelected={isTagAvailable(
+                                    tag,
                                     selectedEffectTagIds.value[tag.id]
-                                }
+                                )}
                                 isSelected={selectedEffectTagIds.value[tag.id]}
                                 onHover$={(isOver) => onHover(tag, isOver)}
                             />
