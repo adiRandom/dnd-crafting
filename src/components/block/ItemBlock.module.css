@@ -1,0 +1,48 @@
+.container {
+    border-style: solid;
+    border-width: 4px;
+    padding: 6px;
+    border-color: var(--separator);
+}
+
+.borderContainer {
+    border-style: solid;
+    border-width: 2px;
+    padding: 8px;
+    border-radius: 8px;
+    border-color: var(--separator);
+    width: 450px;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 12px;
+}
+
+.icon {
+    width: 64px;
+    height: 64px;
+    margin-right: 8px;
+}
+
+.headerText {
+    display: flex;
+    flex-direction: column;
+}
+
+.itemName {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-text);
+}
+
+.rarity {
+    font-size: 1.25rem;
+    color: var(--primary-text);
+}
+
+.tagDescription {
+    width: 100%;
+    margin-bottom: 8px;
+}

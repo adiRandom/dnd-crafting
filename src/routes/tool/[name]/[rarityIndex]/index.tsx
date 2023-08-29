@@ -8,6 +8,7 @@ import { ICON } from "~/theme/color";
 import { isTagAvailable } from "~/models/tags";
 import useIntroModal from "~/hooks/useIntroModal";
 import { PrimaryButton } from "~/components/ui/buttons/primaryButton";
+import ItemBlock from "~/components/block/ItemBlock";
 
 export default component$(() => {
     const {
@@ -22,6 +23,9 @@ export default component$(() => {
         allSlots,
         onTagClick,
         selectedEffectTagIds,
+        showItemCard,
+        iconUrl,
+        onContinueClick,
     } = useTagPageViewModel();
 
     useIntroModal({
@@ -33,6 +37,21 @@ export default component$(() => {
 
     if (tagsToShow.value.length === 0) {
         return <div>Loading...</div>;
+    }
+
+    if (showItemCard.value && rarityLevel && selectedFormTag.value) {
+        return (
+            <div>
+                <ItemBlock
+                    rarity={rarityLevel}
+                    formTag={selectedFormTag.value}
+                    effectTags={tagsToShow.value.filter(
+                        (tag) => selectedEffectTagIds.value[tag.id]
+                    )}
+                    iconUrl={iconUrl.value}
+                />
+            </div>
+        );
     }
 
     return (
@@ -129,11 +148,13 @@ export default component$(() => {
                     )}
                 </div>
             </div>
-            {selectedFormTag.value && <PrimaryButton
-                class={[styles.finishButton]}
-                label="Finish"
-                onClick$={() => {}}
-            />}
+            {selectedFormTag.value && (
+                <PrimaryButton
+                    class={[styles.finishButton]}
+                    label="Finish"
+                    onClick$={onContinueClick}
+                />
+            )}
         </div>
     );
 });

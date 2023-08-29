@@ -1,5 +1,6 @@
 import { useSignal, useTask$, $, useComputed$, useVisibleTask$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
+import { useIconItem } from "~/hooks/useItemIcon";
 import { useItemTier } from "~/hooks/useItemTier";
 import { useTags } from "~/hooks/useTags";
 import { RARITIES } from "~/models/rarity";
@@ -25,6 +26,8 @@ export function useTagPageViewModel() {
 
   const selectedEffectTagIds = useSignal<Record<number, boolean>>({});
 
+  const showItemCard = useSignal(false);
+  const iconUrl = useIconItem(selectedFormTag, rarityIndex);
 
   useTask$(async ({ track }) => {
     track(() => tierInfo.value)
@@ -223,6 +226,10 @@ export function useTagPageViewModel() {
     }
   })
 
+  const onContinueClick = $(() => {
+    showItemCard.value = true;
+  })
+
 
   return {
     onHover,
@@ -235,7 +242,10 @@ export function useTagPageViewModel() {
     remainingSlots: calculatedRemainingSlots,
     allSlots: tierInfo.value?.tags,
     onTagClick,
-    selectedEffectTagIds
+    selectedEffectTagIds,
+    showItemCard,
+    iconUrl,
+    onContinueClick
   }
 }
 

@@ -53,6 +53,7 @@ const TAGS: TagModel[] = [
     minRarity: Rarity.Common,
     slotCost: { value: 2 },
     tagRequirementId: [],
+    itemName:"Amazing Item 1",
     description: "A generic FormTag1."
   },
   {
@@ -62,6 +63,7 @@ const TAGS: TagModel[] = [
     minRarity: Rarity.Uncommon,
     slotCost: { value: 4 },
     tagRequirementId: [],
+    itemName: "Amazing Item 2",
     description: "A special FormTag2."
   },
   {
@@ -71,6 +73,7 @@ const TAGS: TagModel[] = [
     minRarity: Rarity.VeryRare,
     slotCost: { value: 5 },
     tagRequirementId: [],
+    itemName: "Amazing Item 3",
     description: "A unique FormTag3."
   },
 
@@ -143,4 +146,8 @@ export async function getTags(/*toolId: number*/): Promise<TagModel[]> {
   }
 
   return Promise.resolve(tags)
+}
+
+export async function getIconUrl(formTagId: number, rarityIndex: number): Promise<string> {
+  return Promise.resolve(`https://static.vecteezy.com/system/resources/previews/012/014/529/non_2x/sword-pixel-art-free-vector.jpg`)
 }

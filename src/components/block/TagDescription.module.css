@@ -1,0 +1,18 @@
+.tagName{
+  font-size: 1.75rem;
+  color: var(--primary-text);
+  font-weight: bold;
+}
+
+.tagDescription{
+  font-size: 1.25rem;
+  color: var(--primary-text);
+}
+
+.container{
+  display: flex;
+  flex-direction: column;
+  justify-content:  flex-start;
+  align-items: flex-start;
+  width: 100%;
+}

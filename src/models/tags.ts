@@ -9,6 +9,7 @@ export type TagModel = {
   slotCost: SlotCost;
   tagRequirementId: number[];
   description: string;
+  itemName?: string;
 }
 
 export type TagWithAvailability = TagModel & {
