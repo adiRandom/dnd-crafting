@@ -33,7 +33,7 @@
     padding-left: 16px;
     flex-wrap: wrap;
     overflow-y: auto;
-    max-height: calc(100vh - 32px - 16px - 32px - 4rem - 2rem - 64px - 16px);
+    max-height: calc(100vh - 32px - 16px - 32px - 4rem - 2rem - 64px - 16px - 128px);
     justify-content: center;
     align-content: flex-start;
 }
@@ -116,34 +116,38 @@
 }
 
 .selectedTagContainerWithContent {
-    transform: scale(1)!important;
-    opacity: 1!important;
+    transform: scale(1) !important;
+    opacity: 1 !important;
     height: 96px;
 }
 
-.missing{
+.missing {
     color: var(--warning-text);
     font-size: 1.5rem;
     font-style: italic;
     width: 100%;
 }
 
-.missingContainer{
+.missingContainer {
     width: 100%;
 }
 
-.infoColumnEmptyState{
+.infoColumnEmptyState {
     justify-content: center;
     align-items: center;
     position: relative;
 }
 
-.infoColumnEmptyState h2{
+.infoColumnEmptyState h2 {
     z-index: 1;
 }
 
-.emptyStateIcon{
-position: absolute;
-height: calc(100% - 64px);
-z-index: 0;
+.emptyStateIcon {
+    position: absolute;
+    height: calc(100% - 64px);
+    z-index: 0;
+}
+
+.finishButton {
+    margin-bottom: 32px;
 }

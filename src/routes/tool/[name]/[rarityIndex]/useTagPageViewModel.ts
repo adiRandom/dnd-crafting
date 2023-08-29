@@ -1,4 +1,4 @@
-import { useSignal, useTask$, $, useComputed$ } from "@builder.io/qwik";
+import { useSignal, useTask$, $, useComputed$, useVisibleTask$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { useItemTier } from "~/hooks/useItemTier";
 import { useTags } from "~/hooks/useTags";
@@ -12,6 +12,7 @@ export function useTagPageViewModel() {
   const selectedFormTag = useSignal<TagModel | null>(null);
 
   const { formTags, effectTags } = useTags();
+  const formTagsWithAvailability = useSignal<TagWithAvailability[]>([])
   const effectTagsWithAvailability = useSignal<TagWithAvailability[]>([])
 
   const location = useLocation();
@@ -43,16 +44,7 @@ export function useTagPageViewModel() {
     if (selectedFormTag.value) {
       return effectTagsWithAvailability.value
     } else {
-      return formTags.value?.map((tag) => ({
-        ...tag,
-        availability: [
-          {
-            availability:
-              TagAvailability.Available,
-            reason: undefined,
-          },
-        ],
-      }) as TagWithAvailability) ?? []
+      return formTagsWithAvailability.value
     }
   })
 
@@ -153,32 +145,33 @@ export function useTagPageViewModel() {
   })
 
 
-  const onEffectTagHover = $(
-    (tag: TagWithAvailability, isOver: boolean) => {
-      if (isOver) {
-        showInfoForTag.value = tag;
-      } else {
-        showInfoForTag.value = undefined;
-      }
-    }
-  );
+  useVisibleTask$(async ({ track }) => {
+    track(() => [formTags.value])
 
-  const onFormTagHover = $((tag: TagWithAvailability, isOver: boolean) => {
-    onEffectTagHover(
-      tag,
-      isOver
-    )
+    console.log("Calculating availability", formTags.value)
+
+    const mappedTags = (formTags.value ?? []).map(async (tag) => {
+      const availability = await getTagAvailability$(tag)
+      return { ...tag, availability } as TagWithAvailability;
+    })
+
+    formTagsWithAvailability.value = await Promise.all(mappedTags);
   })
+
 
   const onHover = $((tag: TagWithAvailability, isOver: boolean) => {
-    if (selectedFormTag.value) {
-      onEffectTagHover(tag, isOver)
+    if (isOver) {
+      showInfoForTag.value = tag;
     } else {
-      onFormTagHover(tag, isOver)
+      showInfoForTag.value = undefined;
     }
   })
 
-  const onFormTagClick = $((tag: TagModel) => {
+  const onFormTagClick = $((tag: TagWithAvailability) => {
+    if (!isTagAvailable(tag, false)) {
+      return
+    }
+
     selectedFormTag.value = tag;
     if (
       !doesTagTakeAllSlots(tag.slotCost)

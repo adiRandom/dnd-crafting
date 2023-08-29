@@ -8,7 +8,7 @@ function useIntroModal(model: ModalModel) {
       useVisibleTask$(() => {
           setTimeout(() => {
               openModal$(model);
-          }, 3000);
+          }, 100);
       });
 }
 

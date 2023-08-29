@@ -5,8 +5,9 @@ import { capitalize } from "~/lib/stringUtils";
 import styles from "./styles.module.css";
 import SearchIcon from "~/components/ui/icons/search";
 import { ICON } from "~/theme/color";
-import { TagAvailability } from "~/models/tagAvailability";
 import { isTagAvailable } from "~/models/tags";
+import useIntroModal from "~/hooks/useIntroModal";
+import { PrimaryButton } from "~/components/ui/buttons/primaryButton";
 
 export default component$(() => {
     const {
@@ -22,6 +23,14 @@ export default component$(() => {
         onTagClick,
         selectedEffectTagIds,
     } = useTagPageViewModel();
+
+    useIntroModal({
+        title: `${capitalize(toolName)} Tool Rules`,
+        content:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+        button: "Start Crafting",
+    });
+
     if (tagsToShow.value.length === 0) {
         return <div>Loading...</div>;
     }
@@ -120,6 +129,11 @@ export default component$(() => {
                     )}
                 </div>
             </div>
+            {selectedFormTag.value && <PrimaryButton
+                class={[styles.finishButton]}
+                label="Finish"
+                onClick$={() => {}}
+            />}
         </div>
     );
 });
