@@ -13,7 +13,7 @@ type Props = {
 
 const ItemBlock = component$((props: Props) => {
     return (
-        <div class={styles.container}>
+        <div id="item-card" class={styles.container}>
             <div class={styles.borderContainer}>
                 <div class={styles.header}>
                     <img class={styles.icon} src={props.iconUrl} />

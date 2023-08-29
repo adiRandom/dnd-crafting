@@ -26,6 +26,7 @@ export default component$(() => {
         showItemCard,
         iconUrl,
         onContinueClick,
+        print,
     } = useTagPageViewModel();
 
     useIntroModal({
@@ -49,6 +50,11 @@ export default component$(() => {
                         (tag) => selectedEffectTagIds.value[tag.id]
                     )}
                     iconUrl={iconUrl.value}
+                />
+                <PrimaryButton
+                    class={[styles.printButton]}
+                    label="Print"
+                    onClick$={print}
                 />
             </div>
         );

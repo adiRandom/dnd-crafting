@@ -1,5 +1,6 @@
 import { useSignal, useTask$, $, useComputed$, useVisibleTask$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
+import html2canvas from "html2canvas";
 import { useIconItem } from "~/hooks/useItemIcon";
 import { useItemTier } from "~/hooks/useItemTier";
 import { useTags } from "~/hooks/useTags";
@@ -230,6 +231,21 @@ export function useTagPageViewModel() {
     showItemCard.value = true;
   })
 
+  const print = $(() => {
+    // Get the html from the item card element
+    // Use html2canvas to convert the html to an image
+    // Open a new window with the image
+
+    html2canvas(document.getElementById("item-card") as HTMLElement,
+      { allowTaint: true , useCORS: true}
+    ).then(canvas => {
+      const dataURL = canvas.toDataURL("image/png");
+      const newWindow = window.open();
+      newWindow?.document.write(`<img src="${dataURL}" />`);
+      newWindow?.print();
+    })
+  })
+
 
   return {
     onHover,
@@ -245,7 +261,8 @@ export function useTagPageViewModel() {
     selectedEffectTagIds,
     showItemCard,
     iconUrl,
-    onContinueClick
+    onContinueClick,
+    print
   }
 }
 
