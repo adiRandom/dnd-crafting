@@ -30,12 +30,14 @@
     "eslint": "8.44.0",
     "eslint-plugin-qwik": "^1.2.6",
     "prettier": "2.8.8",
+    "prisma": "^5.2.0",
     "typescript": "5.1.6",
     "undici": "5.22.1",
     "vite": "4.4.0",
     "vite-tsconfig-paths": "4.2.0"
   },
   "dependencies": {
+    "@prisma/client": "^5.2.0",
     "html2canvas": "^1.4.1"
   }
 }

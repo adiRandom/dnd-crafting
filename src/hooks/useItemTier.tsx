@@ -13,9 +13,7 @@ export function useItemTier(
 ): Readonly<Signal<ItemTierInfo | null>>;
 export function useItemTier(rarity: Rarity | null | number) {
     const itemTiers = useItemTiers();
-    "itemTiers", itemTiers;
     const decodedRarity = decodeRarity(rarity);
-    "decodedRarity", decodedRarity;
     const tier = useSignal(
         decodedRarity ? itemTiers.value?.[decodedRarity] ?? null : null
     );

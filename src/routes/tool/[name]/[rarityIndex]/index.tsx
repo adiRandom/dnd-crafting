@@ -57,7 +57,7 @@ export default component$(() => {
                     onClick$={print}
                 />
             </div>
-        );
+        );  
     }
 
     return (
