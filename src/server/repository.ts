@@ -1,6 +1,6 @@
 import { server$ } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
-import type { Explainer } from "~/models/explainer";
+import { ExplainerStage, type Explainer } from "~/models/explainer";
 import type { ItemTierInfo } from "~/models/itemTierInfo";
 import type { Rarity } from "~/models/rarity";
 import { RARITIES } from "~/models/rarity";
@@ -24,6 +24,30 @@ export const getTierInfo = server$(async () => {
     }
     return acc
   }, {} as Record<Rarity, ItemTierInfo>)
+})
+
+export const getTierInfoForRarity = server$(async (rarityIndex:number) => {
+  const prisma = new PrismaClient()
+
+  const tier = await prisma.tier_info.findUnique({
+    where: {
+      id: rarityIndex + 1
+    }
+  })
+
+  if (!tier) {
+    return null
+  }
+
+  return {
+    tags: tier.tags,
+    numberOfIp: tier.ip_cost,
+    dcMin: tier.dc_min,
+    dcMax: tier.dc_max ?? undefined,
+    timeInDays: tier.time,
+    color: tier.color,
+  } as ItemTierInfo
+
 })
 
 export const getTags = server$(async (toolId: number) => {
@@ -72,13 +96,6 @@ export const getExplainers = server$(async () => {
         toolId: explainer.dependency ?? 0,
         stage: explainer.stage
       } as Explainer
-    } else if (explainer.dependency_type === "TIER") {
-      return {
-        id: explainer.id,
-        title: explainer.title,
-        text: explainer.text,
-        tierIndex: explainer.dependency ?? 0,
-      } as Explainer
     } else {
       return {
         id: explainer.id,
@@ -88,6 +105,33 @@ export const getExplainers = server$(async () => {
     }
   })
 })
+
+export const getExplainerForTierStage = server$(async (toolId: number) => {
+  const prisma = new PrismaClient()
+
+  const explainer = await prisma.explainers.findFirst({
+    where: {
+      dependency_type: "TOOL",
+      dependency: toolId,
+      stage: ExplainerStage.Tier
+    }
+  })
+
+  return explainer
+})
+
+export const getExplainerForTagStage = server$(async () => {
+  const prisma = new PrismaClient()
+
+  const explainer = await prisma.explainers.findFirst({
+    where: {
+      stage: ExplainerStage.Tags
+    }
+  })
+
+  return explainer
+})
+
 
 export const getTools = server$(async () => {
   const prisma = new PrismaClient()
@@ -101,4 +145,24 @@ export const getTools = server$(async () => {
       emoji: tool.emoji
     } as Tool
   })
+})
+
+export const getTool = server$(async (toolId: number) => {
+  const prisma = new PrismaClient()
+
+  const tool = await prisma.tools.findUnique({
+    where: {
+      id: toolId
+    }
+  })
+
+  if (!tool) {
+    return null
+  }
+
+  return {
+    id: tool.id,
+    name: tool.name,
+    emoji: tool.emoji
+  } as Tool
 })

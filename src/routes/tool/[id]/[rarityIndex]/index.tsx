@@ -1,14 +1,47 @@
+import { TagType, isTagAvailable } from "~/models/tags";
+import { getExplainerForTagStage, getTags, getTierInfoForRarity } from "~/server/repository";
+import { routeLoader$ } from "@builder.io/qwik-city";
+import { ModalModel } from "~/models/ModalModel";
 import { component$ } from "@builder.io/qwik";
-import Tag from "~/components/tag/tag";
-import { useTagPageViewModel } from "./useTagPageViewModel";
-import { capitalize } from "~/lib/stringUtils";
-import styles from "./styles.module.css";
-import SearchIcon from "~/components/ui/icons/search";
-import { ICON } from "~/theme/color";
-import { isTagAvailable } from "~/models/tags";
-import useIntroModal from "~/hooks/useIntroModal";
-import { PrimaryButton } from "~/components/ui/buttons/primaryButton";
 import ItemBlock from "~/components/block/ItemBlock";
+import Tag from "~/components/tag/tag";
+import { PrimaryButton } from "~/components/ui/buttons/primaryButton";
+import SearchIcon from "~/components/ui/icons/search";
+import useIntroModal from "~/hooks/useIntroModal";
+import { capitalize } from "~/lib/stringUtils";
+import { ICON } from "~/theme/color";
+import { useTagPageViewModel } from "./useTagPageViewModel";
+import styles from "./styles.module.css";
+
+export const useTags = routeLoader$(async (ev) => {
+    const toolId = ev.params.id;
+    const tags = await getTags(parseInt(toolId));
+    return {
+        formTags: tags.filter((tag) => tag.type === TagType.FormTag),
+        effectTags: tags.filter((tag) => tag.type === TagType.EffectTag),
+    }
+})
+
+export const useTierInfo = routeLoader$(async (ev) => {
+    const tierIndex = ev.params.rarityIndex;
+    return await getTierInfoForRarity(parseInt(tierIndex));
+})
+
+export const useExplainModal = routeLoader$(async () => {
+    const explainer = await getExplainerForTagStage()
+
+    return explainer ? {
+        title: explainer.title,
+        content: explainer.text,
+        button: "Add Tags",
+    } as ModalModel : {
+        title: `Tag Rules`,
+        content:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+        button: "Add Tags",
+    } as ModalModel
+})
+
 
 export default component$(() => {
     const {
@@ -29,12 +62,9 @@ export default component$(() => {
         print,
     } = useTagPageViewModel();
 
-    useIntroModal({
-        title: `${capitalize(toolName)} Tool Rules`,
-        content:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
-        button: "Start Crafting",
-    });
+    const explainer = useExplainModal();
+
+    useIntroModal(explainer.value);
 
     if (tagsToShow.value.length === 0) {
         return <div>Loading...</div>;
@@ -64,7 +94,7 @@ export default component$(() => {
         <div class={styles.main}>
             <h1 class={styles.title}>Select a form tag</h1>
             <h2 class={styles.subtitle}>
-                {capitalize(toolName)} Tools ➡ {rarityLevel}
+                {capitalize(toolName.value??"")} Tools ➡ {rarityLevel}
             </h2>
             <h2 class={styles.slots}>
                 Slots : {remainingSlots.value} / {allSlots}

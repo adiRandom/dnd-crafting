@@ -4,12 +4,6 @@ export type Explainer = {
   text: string;
   toolId: number;
   stage: ExplainerStage
-} | {
-  id: number;
-  title: string;
-  text: string;
-  tierIndex: number;
-  stage: ExplainerStage
 }
   | {
     id: number;

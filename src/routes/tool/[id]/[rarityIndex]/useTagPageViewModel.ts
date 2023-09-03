@@ -2,25 +2,26 @@ import { useSignal, useTask$, $, useComputed$, useVisibleTask$ } from "@builder.
 import { useLocation } from "@builder.io/qwik-city";
 import html2canvas from "html2canvas";
 import { useIconItem } from "~/hooks/useItemIcon";
-import { useItemTier } from "~/hooks/useItemTier";
-import { useTags } from "~/hooks/useTags";
 import { RARITIES } from "~/models/rarity";
 import type { TagAvailabilityWithReason } from "~/models/tagAvailability";
 import { TagAvailability } from "~/models/tagAvailability";
 import type { TagModel, TagWithAvailability } from "~/models/tags";
 import { doesTagTakeAllSlots, isTagAvailable } from "~/models/tags";
+import { useTags, useTierInfo } from ".";
+import { useTool } from "..";
 
 export function useTagPageViewModel() {
   const selectedFormTag = useSignal<TagModel | null>(null);
 
-  const { formTags, effectTags } = useTags();
+  const tags = useTags();
   const formTagsWithAvailability = useSignal<TagWithAvailability[]>([])
   const effectTagsWithAvailability = useSignal<TagWithAvailability[]>([])
 
   const location = useLocation();
-  const toolName = location.params.name;
+  const tool = useTool();
+  const toolName = useComputed$(() => tool.value?.name)
   const rarityIndex = Number.parseInt(location.params.rarityIndex);
-  const tierInfo = useItemTier(rarityIndex);
+  const tierInfo = useTierInfo();
 
   const remainingSlots = useSignal(tierInfo.value?.tags);
   const isATakeAllTagSelected = useSignal(false);
@@ -112,7 +113,7 @@ export function useTagPageViewModel() {
       const requirementsAsString = tag.tagRequirementId.reduce(
         (acc, tagId) =>
           acc +
-          (formTags.value?.find(
+          (tags.value.formTags.find(
             (formTag) => formTag.id === tagId
           )?.name ?? "??") +
           " / ",
@@ -137,10 +138,10 @@ export function useTagPageViewModel() {
   })
 
   useTask$(async ({ track }) => {
-    track(() => [effectTags.value, selectedFormTag.value, selectedEffectTagIds.value])
+    track(() => [tags.value.effectTags, selectedFormTag.value, selectedEffectTagIds.value])
 
     console.log("Calculating availability")
-    const mappedTags = (effectTags.value ?? []).map(async (tag) => {
+    const mappedTags = (tags.value.effectTags).map(async (tag) => {
       const availability = await getTagAvailability$(tag)
       return { ...tag, availability } as TagWithAvailability;
     })
@@ -150,11 +151,11 @@ export function useTagPageViewModel() {
 
 
   useVisibleTask$(async ({ track }) => {
-    track(() => [formTags.value])
+    track(() => [tags.value.formTags])
 
-    console.log("Calculating availability", formTags.value)
+    console.log("Calculating availability", tags.value.formTags)
 
-    const mappedTags = (formTags.value ?? []).map(async (tag) => {
+    const mappedTags = (tags.value.formTags).map(async (tag) => {
       const availability = await getTagAvailability$(tag)
       return { ...tag, availability } as TagWithAvailability;
     })

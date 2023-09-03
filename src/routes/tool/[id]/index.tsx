@@ -1,33 +1,57 @@
 import { component$, useSignal } from "@builder.io/qwik";
-import { Link, useLocation } from "@builder.io/qwik-city";
+import { Link, routeLoader$ } from "@builder.io/qwik-city";
 import useIntroModal from "~/hooks/useIntroModal";
 import styles from "./styles.module.css";
 import { RARITIES, Rarity } from "~/models/rarity";
 import { RarityButtonGroup } from "~/components/ui/buttonGroup/rarityButtonGroup/rarityButtonGroup";
-import { capitalize } from "~/lib/stringUtils";
 import { PrimaryButton } from "~/components/ui/buttons/primaryButton";
-import { useItemTiers } from "~/hooks/useItemTiers";
+import {
+    getExplainerForTierStage,
+    getTierInfo,
+    getTool,
+} from "~/server/repository";
+import { ModalModel } from "~/models/ModalModel";
+
+export const useTool = routeLoader$(async (ev) => {
+    const toolId = ev.params.id;
+    return await getTool(parseInt(toolId));
+});
+
+export const useExplainModal = routeLoader$(async (ev) => {
+    const toolId = ev.params.id;
+    const explainer = await getExplainerForTierStage(parseInt(toolId));
+    return explainer
+        ? ({
+              title: explainer.title,
+              content: explainer.text,
+              button: "Continue Crafting",
+          } as ModalModel)
+        : ({
+              title: `Tool Rules`,
+              content:
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+              button: "Continue Crafting",
+          } as ModalModel);
+});
+
+export const useItemTiers = routeLoader$(async () => {
+    return await getTierInfo();
+ })
+
 
 export default component$(() => {
-    const location = useLocation();
-    const toolName = location.params.name;
+    const tool = useTool();
     const selectedRarity = useSignal<Rarity | null>(null);
     const itemTiers = useItemTiers();
 
-    useIntroModal({
-        title: `${capitalize(toolName)} Tool Rules`,
-        content:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
-        button: "Start Crafting",
-    });
+    const modalModel = useExplainModal();
 
-    if (!itemTiers.value) {
-        return null;
-    }
+    useIntroModal(modalModel.value);
+
 
     return (
         <div class={styles.main}>
-            <h1 class={styles.header}>Tool: {toolName}</h1>
+            <h1 class={styles.header}>Tool: {tool.value?.name}</h1>
             <div class={styles.container}>
                 <div
                     class={{
@@ -90,7 +114,7 @@ export default component$(() => {
                                 : ""}
                         </h2>
                         <Link
-                            href={`/tool/${toolName}/${RARITIES.indexOf(
+                            href={`/tool/${tool.value?.id}/${RARITIES.indexOf(
                                 selectedRarity.value ?? Rarity.Common
                             )}`}
                         >
