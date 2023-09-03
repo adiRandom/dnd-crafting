@@ -1,5 +1,5 @@
 import { Signal, useSignal, useTask$ } from "@builder.io/qwik";
-import { getIconUrl } from "~/data/api";
+import { getIconUrl } from "~/server/repository";
 import { TagModel } from "~/models/tags";
 
 export function useIconItem(

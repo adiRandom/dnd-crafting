@@ -1,29 +1,29 @@
 import { useSignal, useTask$ } from "@builder.io/qwik";
-import { getTags } from "~/data/api";
+import { getTags } from "~/server/repository";
 import { TagModel, TagType } from "~/models/tags";
 
-export const useTags = (
+export const useTags = () =>
     /*toolId:number, */
-) => {
-    const tags = useSignal<TagModel[] | null>(null);
-    const formTags = useSignal<TagModel[] | null>(null);
-    const effectTags = useSignal<TagModel[] | null>(null);
+    {
+        const tags = useSignal<TagModel[] | null>(null);
+        const formTags = useSignal<TagModel[] | null>(null);
+        const effectTags = useSignal<TagModel[] | null>(null);
 
-    useTask$(async () => {
-        // Get item tiers
-        if (tags.value) return;
+        useTask$(async () => {
+            // Get item tiers
+            if (tags.value) return;
 
-        const tagsResponse = await getTags();
-        tags.value = tagsResponse;
+            const tagsResponse = await getTags();
+            tags.value = tagsResponse;
 
-        formTags.value = tagsResponse.filter(
-            (tag) => tag.type === TagType.FormTag
-        );
+            formTags.value = tagsResponse.filter(
+                (tag) => tag.type === TagType.FormTag
+            );
 
-        effectTags.value = tagsResponse.filter(
-            (tag) => tag.type === TagType.EffectTag
-        );
-    });
+            effectTags.value = tagsResponse.filter(
+                (tag) => tag.type === TagType.EffectTag
+            );
+        });
 
-    return { tags, formTags, effectTags };
-};
+        return { tags, formTags, effectTags };
+    };

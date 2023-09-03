@@ -1,5 +1,5 @@
 import { useSignal, useTask$ } from "@builder.io/qwik";
-import { getTierInfo } from "~/data/api";
+import { getTierInfo } from "~/server/repository";
 import { ItemTierInfo } from "~/models/itemTierInfo";
 import { Rarity } from "~/models/rarity";
 

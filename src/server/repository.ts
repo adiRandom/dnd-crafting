@@ -1,13 +1,14 @@
+import { server$ } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
 import type { Explainer } from "~/models/explainer";
 import type { ItemTierInfo } from "~/models/itemTierInfo";
 import type { Rarity } from "~/models/rarity";
 import { RARITIES } from "~/models/rarity";
-import type { TagModel} from "~/models/tags";
+import type { TagModel } from "~/models/tags";
 import { TagType } from "~/models/tags";
 import type { Tool } from "~/models/tool";
 
-export async function getTierInfo(): Promise<Record<Rarity, ItemTierInfo>> {
+export const getTierInfo = server$(async () => {
   const prisma = new PrismaClient()
 
   const tiers = await prisma.tier_info.findMany()
@@ -23,9 +24,9 @@ export async function getTierInfo(): Promise<Record<Rarity, ItemTierInfo>> {
     }
     return acc
   }, {} as Record<Rarity, ItemTierInfo>)
-}
+})
 
-export async function getTags(toolId: number): Promise<TagModel[]> {
+export const getTags = server$(async (toolId: number) => {
   const prisma = new PrismaClient()
 
   const tags = await prisma.tags.findMany({
@@ -51,13 +52,13 @@ export async function getTags(toolId: number): Promise<TagModel[]> {
       itemName: tag.item_name
     } as TagModel
   }))
-}
+})
 
 export async function getIconUrl(formTagId: number, rarityIndex: number): Promise<string> {
   return Promise.resolve(`https://static.vecteezy.com/system/resources/previews/012/014/529/non_2x/sword-pixel-art-free-vector.jpg`)
 }
 
-export async function getExplainers(): Promise<Explainer[]> {
+export const getExplainers = server$(async () => {
   const prisma = new PrismaClient()
 
   const explainers = await prisma.explainers.findMany()
@@ -69,25 +70,26 @@ export async function getExplainers(): Promise<Explainer[]> {
         title: explainer.title,
         text: explainer.text,
         toolId: explainer.dependency ?? 0,
-      }
+        stage: explainer.stage
+      } as Explainer
     } else if (explainer.dependency_type === "TIER") {
       return {
         id: explainer.id,
         title: explainer.title,
         text: explainer.text,
         tierIndex: explainer.dependency ?? 0,
-      }
+      } as Explainer
     } else {
       return {
         id: explainer.id,
         title: explainer.title,
         text: explainer.text,
-      }
+      } as Explainer
     }
   })
-}
+})
 
-export async function getTools(): Promise<Tool[]> {
+export const getTools = server$(async () => {
   const prisma = new PrismaClient()
 
   const tools = await prisma.tools.findMany()
@@ -99,4 +101,4 @@ export async function getTools(): Promise<Tool[]> {
       emoji: tool.emoji
     } as Tool
   })
-}
+})

@@ -1,33 +1,45 @@
 import { component$, $ } from "@builder.io/qwik";
+import { routeLoader$ } from "@builder.io/qwik-city";
 import type { ButtonOptions } from "~/components/ui/buttonGroup/buttonGroup";
 import { ButtonGroup } from "~/components/ui/buttonGroup/buttonGroup";
 import useIntroModal from "~/hooks/useIntroModal";
+import type { ModalModel } from "~/models/ModalModel";
+import { ExplainerStage } from "~/models/explainer";
+import { getExplainers, getTools } from "~/server/repository";
+
+export const useExplainerModal = routeLoader$(async () => {
+    const explainers = await getExplainers();
+    const craftingRulesExplainer = explainers.find(
+        (explainer) => explainer.stage == ExplainerStage.Tool
+    );
+    return craftingRulesExplainer
+        ? ({
+              title: craftingRulesExplainer.title,
+              content: craftingRulesExplainer.text,
+              button: "Start Crafting",
+          } as ModalModel)
+        : {
+              title: "Crafting Rules",
+              content:
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+              button: "Start Crafting",
+          };
+});
+
+export const useToolButtons = routeLoader$(async () => {
+	const tools = await getTools();
+	return tools.map((tool) => ({
+		icon: tool.emoji,
+		label: tool.name,
+		href: `/tool/${tool.id}`,
+	} as ButtonOptions));
+})
 
 export default component$(() => {
-    const BUTTONS: ButtonOptions[] = [
-        {
-            icon: "🧪",
-            label: "Alchemy Tools",
-            onClick: $(() => {}),
-        },
-        {
-            icon: "🍪",
-            label: "Cooking Tools",
-            onClick: $(() => {}),
-        },
-        {
-            icon: "🔨",
-            label: "Smithing Tools",
-            href: "/tool/smithing",
-        },
-    ];
+    const modalModel = useExplainerModal();
+    const buttons = useToolButtons();
 
-    useIntroModal({
-        title: "Crafting Rules",
-        content:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
-        button: "Start Crafting",
-    });
+    useIntroModal(modalModel.value);
 
-    return <ButtonGroup buttons={BUTTONS} />;
+    return <ButtonGroup buttons={buttons.value} />;
 });
