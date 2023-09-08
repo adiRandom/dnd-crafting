@@ -6,12 +6,11 @@
     border-radius: 8px;
     border-color: var(--separator);
     font-size: 18px;
-    color:var(--primary-text);
+    color:var(--accent-text);
 }
 
 .submit{
   width: 128px;
   height: 64px;
   background-color: var(--primary-btn);
-
 }

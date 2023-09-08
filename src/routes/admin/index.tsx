@@ -1,13 +1,18 @@
 import { component$, useSignal, $ } from "@builder.io/qwik";
-import { Link, routeAction$, z, zod$ } from "@builder.io/qwik-city";
+import { Link, routeAction$, routeLoader$, z, zod$ } from "@builder.io/qwik-city";
 import { checkPasscode as remoteCheckPasscode } from "~/server/repository";
 import styles from "./admin.module.css";
-import pageSyles from "./index.module.css"
+import pageSyles from "./index.module.css";
 
 export const useCheckPasscode = routeAction$(
-    async (data) => {
+    async (data, reqEvent) => {
         const { passcode } = data;
         const valid = await remoteCheckPasscode(passcode);
+        if (valid) {
+            reqEvent.cookie.set("passcode", passcode);
+        } else {
+            reqEvent.cookie.delete("passcode");
+        }
         return { valid };
     },
     zod$({
@@ -15,9 +20,16 @@ export const useCheckPasscode = routeAction$(
     })
 );
 
+export const useInitialPasscode = routeLoader$(async (ev) => {
+    return {
+        valid: await remoteCheckPasscode(ev.cookie.get("passcode")?.value ?? ""),
+    };
+});
+
 export default component$(() => {
     const checkPasscode = useCheckPasscode();
-    const isPasscodeValid = useSignal(false);
+    const initialPasscode = useInitialPasscode();
+    const isPasscodeValid = useSignal(initialPasscode.value.valid);
     const typedPasscode = useSignal("");
 
     const onCheckPasscode$ = $(async () => {
@@ -25,7 +37,6 @@ export default component$(() => {
             (await checkPasscode.submit({ passcode: typedPasscode.value }))
                 .value.valid ?? false;
     });
-
     return (
         <div class={pageSyles.main}>
             <h1>Admin Panel</h1>
