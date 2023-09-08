@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model admin {
+  id       Int    @id @default(autoincrement())
+  passcode String
+}
+
 model effect_tag_deps {
   id                                       Int  @id @default(autoincrement())
   form_tag_id                              Int

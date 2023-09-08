@@ -1,0 +1,17 @@
+.input{
+    width: 200px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border-color: var(--separator);
+    font-size: 18px;
+    color:var(--primary-text);
+}
+
+.submit{
+  width: 128px;
+  height: 64px;
+  background-color: var(--primary-btn);
+
+}

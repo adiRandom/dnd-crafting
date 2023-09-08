@@ -26,7 +26,7 @@ export const getTierInfo = server$(async () => {
   }, {} as Record<Rarity, ItemTierInfo>)
 })
 
-export const getTierInfoForRarity = server$(async (rarityIndex:number) => {
+export const getTierInfoForRarity = server$(async (rarityIndex: number) => {
   const prisma = new PrismaClient()
 
   const tier = await prisma.tier_info.findUnique({
@@ -165,4 +165,16 @@ export const getTool = server$(async (toolId: number) => {
     name: tool.name,
     emoji: tool.emoji
   } as Tool
+})
+
+export const checkPasscode = server$(async (key: string) => {
+  const prisma = new PrismaClient()
+
+  const passcode = await prisma.admin.findFirst({
+    where: {
+      passcode: key
+    }
+  })
+
+  return !!passcode
 })
