@@ -18,3 +18,18 @@ export enum ExplainerStage {
   Tier = 1,
   Tags = 2,
 }
+
+export function isToolExplainer(explainer: Explainer): explainer is Explainer & { toolId: number } {
+  return explainer.stage === ExplainerStage.Tool
+}
+
+export function explainerStageName(stage: ExplainerStage) {
+  switch (stage) {
+    case ExplainerStage.Tool:
+      return "Tool"
+    case ExplainerStage.Tier:
+      return "Tier"
+    case ExplainerStage.Tags:
+      return "Tags"
+  }
+}

@@ -1,6 +1,6 @@
 import { server$ } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
-import { ExplainerStage, type Explainer } from "~/models/explainer";
+import { ExplainerStage, type Explainer, isToolExplainer } from "~/models/explainer";
 import type { ItemTierInfo } from "~/models/itemTierInfo";
 import type { Rarity } from "~/models/rarity";
 import { RARITIES } from "~/models/rarity";
@@ -101,6 +101,7 @@ export const getExplainers = server$(async () => {
         id: explainer.id,
         title: explainer.title,
         text: explainer.text,
+        stage: explainer.stage
       } as Explainer
     }
   })
@@ -225,3 +226,82 @@ export const deleteTool = server$<(toolId: number) => Promise<void>>(async (tool
     }
   })
 })
+
+export const updateExplainer = server$<(explainer: Explainer) => Promise<Explainer>>(
+  async (explainer: Explainer) => {
+    const prisma = new PrismaClient()
+
+    const updatedExplainer = await prisma.explainers.update({
+      where: {
+        id: explainer.id
+      },
+      data: {
+        title: explainer.title,
+        text: explainer.text,
+        dependency: isToolExplainer(explainer) ? explainer.toolId : null,
+        stage: explainer.stage,
+        dependency_type: isToolExplainer(explainer) ? "TOOL" : undefined
+      }
+    })
+
+    if (updatedExplainer.dependency_type === "TOOL" && updatedExplainer.dependency) {
+      return {
+        id: updatedExplainer.id,
+        title: updatedExplainer.title,
+        text: updatedExplainer.text,
+        toolId: updatedExplainer.dependency,
+        stage: updatedExplainer.stage
+      }
+    } else {
+      return {
+        id: updatedExplainer.id,
+        title: updatedExplainer.title,
+        text: updatedExplainer.text,
+        stage: updatedExplainer.stage
+      }
+    }
+  }
+)
+
+export const createExplainer = server$<(explainer: Explainer) => Promise<Explainer>>(
+  async (explainer: Explainer) => {
+    const prisma = new PrismaClient()
+
+    const createdExplainer = await prisma.explainers.create({
+      data: {
+        title: explainer.title,
+        text: explainer.text,
+        dependency: isToolExplainer(explainer) ? explainer.toolId : null,
+        stage: explainer.stage,
+        dependency_type: isToolExplainer(explainer) ? "TOOL" : undefined
+      }
+    })
+
+    if (createdExplainer.dependency_type === "TOOL" && createdExplainer.dependency) {
+      return {
+        id: createdExplainer.id,
+        title: createdExplainer.title,
+        text: createdExplainer.text,
+        toolId: createdExplainer.dependency,
+        stage: createdExplainer.stage
+      }
+    } else {
+      return {
+        id: createdExplainer.id,
+        title: createdExplainer.title,
+        text: createdExplainer.text,
+        stage: createdExplainer.stage
+      }
+    }
+  })
+
+export const deleteExplainer = server$<(explainerId: number) => Promise<void>>(
+  async (explainerId: number) => {
+    const prisma = new PrismaClient()
+
+    await prisma.explainers.delete({
+      where: {
+        id: explainerId
+      }
+    })
+  })

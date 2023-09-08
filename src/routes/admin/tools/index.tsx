@@ -23,24 +23,26 @@ export default component$(() => {
 
     const onSubmit = $(async () => {
         if (isEdit.value) {
-            selectedTool.value = await updateTool({
+            const result = await updateTool({
                 ...selectedTool.value!,
                 name: toolName.value,
                 emoji: toolEmoji.value,
             } as Tool);
 
             tools.value = tools.value.map((tool) =>
-                tool.id === selectedTool.value?.id ? selectedTool.value! : tool
+                tool.id === result?.id ? result! : tool
             );
         } else {
-            selectedTool.value = await createTool({
+            const result = await createTool({
                 name: toolName.value,
                 emoji: toolEmoji.value,
                 id: 0,
             });
 
-            tools.value = [...tools.value, selectedTool.value!];
+            tools.value = [...tools.value, result];
         }
+      
+      selectedTool.value = null;
     });
 
     const onDelete = $(async () => {
@@ -51,9 +53,22 @@ export default component$(() => {
                 (tool) => tool.id !== selectedTool.value?.id
             );
         }
+      
+      selectedTool.value = null;
+
+      toolName.value = "";
+      toolEmoji.value = "";
     });
   
   const onCellClick = $(async (tool: Tool) => {
+    if (selectedTool.value?.id === tool.id) {
+      selectedTool.value = null;
+
+      toolName.value = "";
+      toolEmoji.value = "";
+      return;
+    }
+
     selectedTool.value = tool;
     toolName.value = tool.name;
     toolEmoji.value = tool.emoji??"";
