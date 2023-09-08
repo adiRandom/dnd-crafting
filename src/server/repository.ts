@@ -178,3 +178,50 @@ export const checkPasscode = server$(async (key: string) => {
 
   return !!passcode
 })
+
+export const updateTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: Tool) => {
+  const prisma = new PrismaClient()
+
+  const updatedTool = await prisma.tools.update({
+    where: {
+      id: tool.id
+    },
+    data: {
+      name: tool.name,
+      emoji: tool.emoji
+    }
+  })
+
+  return {
+    id: updatedTool.id,
+    name: updatedTool.name,
+    emoji: updatedTool.emoji ?? undefined
+  }
+})
+
+export const createTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: Tool) => {
+  const prisma = new PrismaClient()
+
+  const createdTool = await prisma.tools.create({
+    data: {
+      name: tool.name,
+      emoji: tool.emoji
+    }
+  })
+
+  return {
+    id: createdTool.id,
+    name: createdTool.name,
+    emoji: createdTool.emoji ?? undefined
+  }
+})
+
+export const deleteTool = server$<(toolId: number) => Promise<void>>(async (toolId: number) => {
+  const prisma = new PrismaClient()
+
+  await prisma.tools.delete({
+    where: {
+      id: toolId
+    }
+  })
+})
