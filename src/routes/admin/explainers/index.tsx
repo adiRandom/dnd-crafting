@@ -35,7 +35,7 @@ export default component$(() => {
     const onSubmit = $(async () => {
         let result = null as Explainer | null;
         if (isEdit.value) {
-            if (explainerStage.value === ExplainerStage.Tool) {
+            if (explainerStage.value === ExplainerStage.Tier) {
                 result = await updateExplainer({
                     ...selectedExplainer.value!,
                     title: explainerTtitle.value,
@@ -173,7 +173,7 @@ export default component$(() => {
                         <option value={ExplainerStage.Tags}>Tag</option>
                         <option value={ExplainerStage.Tier}>Tier</option>
                     </select>
-                    {explainerStage.value === ExplainerStage.Tool && (
+                    {explainerStage.value === ExplainerStage.Tier && (
                         <select
                             class={styles.selectInput}
                             value={explainerTool.value?.id}

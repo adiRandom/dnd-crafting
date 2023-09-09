@@ -445,7 +445,8 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
       slotCost: createdTag.cost_takes_all ? { takeAll: true } : { value: createdTag.cost_value },
       tagRequirementId: tagReq.map(tagDep => tagDep.form_tag_id),
       description: createdTag.description,
-      itemName: createdTag.item_name
+      itemName: createdTag.item_name,
+      toolId: createdTag.tool_id
     } as TagModel
   }
 )

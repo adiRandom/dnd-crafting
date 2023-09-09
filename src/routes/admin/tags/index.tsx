@@ -38,9 +38,9 @@ export default component$(() => {
     const selectedTool = useSignal<Tool | null>(tools.value[0] ?? null);
 
     const availableFormTagsDependencies = useComputed$(() => {
-        if (selectedTool.value === null ||  tagType.value === TagType.FormTag) {
+        if (selectedTool.value === null || tagType.value === TagType.FormTag) {
             return [];
-        } 
+        }
 
         return tags.value.filter(
             (tag) =>
@@ -148,7 +148,7 @@ export default component$(() => {
             ? "-1"
             : tag.slotCost.value.toString();
         formTagRequirements.value = tag.tagRequirementId;
-        console.log(tag.tagRequirementId)
+        console.log(tag.tagRequirementId);
         itemName.value = tag.itemName ?? "";
         selectedTool.value = tool;
     });
@@ -268,17 +268,19 @@ export default component$(() => {
                                 </option>
                             ))}
                         </select>
-
-                        <h3 class={styles.inputLabel}>Item Name</h3>
-                        <input
-                            class={styles.input}
-                            type="text"
-                            value={itemName.value}
-                            onChange$={(ev) =>
-                                (itemName.value = ev.target.value)
-                            }
-                        />
-
+                        {tagType.value === TagType.FormTag && (
+                            <>
+                                <h3 class={styles.inputLabel}>Item Name</h3>
+                                <input
+                                    class={styles.input}
+                                    type="text"
+                                    value={itemName.value}
+                                    onChange$={(ev) =>
+                                        (itemName.value = ev.target.value)
+                                    }
+                                />
+                            </>
+                        )}
                         {availableFormTagsDependencies.value.length != 0 && (
                             <>
                                 <h3 class={styles.inputLabel}>
