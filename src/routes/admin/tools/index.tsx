@@ -12,6 +12,7 @@ import styles from "./index.module.css";
 
 export const useTools = routeLoader$(() => getTools());
 
+
 export default component$(() => {
     const initialTools = useTools();
     const tools = useSignal(initialTools.value);

@@ -10,6 +10,7 @@ export type TagModel = {
   tagRequirementId: number[];
   description: string;
   itemName?: string;
+  toolId?: number;
 }
 
 export type TagWithAvailability = TagModel & {
