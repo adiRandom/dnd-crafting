@@ -426,9 +426,16 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
         item_name: tag.itemName ?? "",
         cost_value: doesTagTakeAllSlots(tag.slotCost) ? null : tag.slotCost.value,
         cost_takes_all: doesTagTakeAllSlots(tag.slotCost) ? 1 : 0,
-        tool_id: tag.toolId
+        tool_id: tag.toolId,
       }
     })
+
+    const tagReq = await Promise.all(tag.tagRequirementId.map(tagRequirementId => prisma.effect_tag_deps.create({
+      data: {
+        effect_tag_id: createdTag.id,
+        form_tag_id: tagRequirementId
+      }
+    })))
 
     return {
       id: createdTag.id,
@@ -436,11 +443,7 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
       type: createdTag.is_form ? TagType.FormTag : TagType.EffectTag,
       minRarity: RARITIES[createdTag.min_rarity_id - 1],
       slotCost: createdTag.cost_takes_all ? { takeAll: true } : { value: createdTag.cost_value },
-      tagRequirementId: (await prisma.effect_tag_deps.findMany({
-        where: {
-          effect_tag_id: createdTag.id
-        }
-      })).map(tagDep => tagDep.form_tag_id),
+      tagRequirementId: tagReq.map(tagDep => tagDep.form_tag_id),
       description: createdTag.description,
       itemName: createdTag.item_name
     } as TagModel

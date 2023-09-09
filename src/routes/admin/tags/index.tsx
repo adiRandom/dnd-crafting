@@ -35,20 +35,17 @@ export default component$(() => {
     const slotCost = useSignal("");
     const formTagRequirements = useSignal([] as number[]);
     const itemName = useSignal("");
-    const selectedTool = useSignal<Tool | null>(null);
+    const selectedTool = useSignal<Tool | null>(tools.value[0] ?? null);
 
     const availableFormTagsDependencies = useComputed$(() => {
-        if (
-            selectedTag.value?.type === TagType.FormTag ||
-            tagType.value === TagType.FormTag
-        ) {
+        if (selectedTool.value === null ||  tagType.value === TagType.FormTag) {
             return [];
-        }
+        } 
 
         return tags.value.filter(
             (tag) =>
                 tag.type === TagType.FormTag &&
-                tag.toolId === selectedTag.value?.toolId
+                tag.toolId === selectedTool.value?.id
         );
     });
 
@@ -151,6 +148,7 @@ export default component$(() => {
             ? "-1"
             : tag.slotCost.value.toString();
         formTagRequirements.value = tag.tagRequirementId;
+        console.log(tag.tagRequirementId)
         itemName.value = tag.itemName ?? "";
         selectedTool.value = tool;
     });
@@ -165,14 +163,18 @@ export default component$(() => {
                             class={{
                                 [styles.cell]: true,
                                 [styles.selectedCell]:
-                                    selectedTool.value?.id === tag.id,
+                                    selectedTag.value?.id === tag.id,
                             }}
                             key={tag.id}
                             onClick$={() => onCellClick(tag)}
                         >
                             <h2 class={styles.toolName}>{tag.name}</h2>
-                            <h3>{tag.type}</h3>
-                            <h3>
+                            <h3 class={styles.cellSubtitle}>
+                                {tag.type === TagType.FormTag
+                                    ? "Form Tag"
+                                    : "Effect Tag"}
+                            </h3>
+                            <h3 class={styles.cellSubtitle}>
                                 {
                                     tools.value.find(
                                         (tool) => tool.id === tag.toolId
@@ -251,14 +253,14 @@ export default component$(() => {
                         <select
                             class={styles.selectInput}
                             value={selectedTool.value?.id}
-                            onChange$={(ev) =>
-                                (selectedTool.value =
+                            onChange$={(ev) => {
+                                selectedTool.value =
                                     tools.value.find(
                                         (tool) =>
                                             tool.id ===
                                             Number.parseInt(ev.target.value)
-                                    ) ?? null)
-                            }
+                                    ) ?? null;
+                            }}
                         >
                             {tools.value.map((tool) => (
                                 <option key={tool.id} value={tool.id}>

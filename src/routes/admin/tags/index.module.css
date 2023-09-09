@@ -27,9 +27,9 @@
 
 .cell{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 12px;
-  align-items: center;
+  align-items: start;
   justify-content: space-between;
   padding: 12px;
   border-radius: 8px;
@@ -57,7 +57,7 @@
 }
 
 .toolName{
-  font-size: 24px;
+  font-size: 32px;
 }
 
 .rightPane{
@@ -153,4 +153,9 @@
 
 .selectedFormTagRequirement{
   background-color: var(--primary-btn);
+}
+
+.cellSubtitle{
+  font-size: 18px;
+  color: var(--accent-text);
 }
