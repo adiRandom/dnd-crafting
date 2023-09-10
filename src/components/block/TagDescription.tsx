@@ -1,5 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import styles from "./tagDescription.module.css";
+import styles from "./TagDescription.module.css";
 import { TagModel } from "~/models/tags";
 
 type Props = {
