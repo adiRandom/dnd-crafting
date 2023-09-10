@@ -2,7 +2,7 @@ import { component$ } from "@builder.io/qwik";
 import { Rarity } from "~/models/rarity";
 import { TagModel } from "~/models/tags";
 import TagDescription from "./TagDescription";
-import styles from "./itemBlock.module.css";
+import styles from "./ItemBlock.module.css";
 
 type Props = {
     rarity: Rarity;
