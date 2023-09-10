@@ -1,4 +1,4 @@
-import { component$, $ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import type { ButtonOptions } from "~/components/ui/buttonGroup/buttonGroup";
 import { ButtonGroup } from "~/components/ui/buttonGroup/buttonGroup";
