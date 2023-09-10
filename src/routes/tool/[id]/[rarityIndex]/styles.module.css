@@ -157,3 +157,7 @@
     margin-right: auto;
     margin-top: 32px!important;
 }
+
+.loading{
+    color:var(--accent-text)
+}

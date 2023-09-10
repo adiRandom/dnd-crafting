@@ -20,7 +20,7 @@ export enum ExplainerStage {
 }
 
 export function isToolExplainer(explainer: Explainer): explainer is Explainer & { toolId: number } {
-  return explainer.stage === ExplainerStage.Tool
+  return explainer.stage === ExplainerStage.Tier
 }
 
 export function explainerStageName(stage: ExplainerStage) {

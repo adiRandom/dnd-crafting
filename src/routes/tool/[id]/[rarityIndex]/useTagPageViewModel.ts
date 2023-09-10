@@ -7,8 +7,7 @@ import type { TagAvailabilityWithReason } from "~/models/tagAvailability";
 import { TagAvailability } from "~/models/tagAvailability";
 import type { TagModel, TagWithAvailability } from "~/models/tags";
 import { doesTagTakeAllSlots, isTagAvailable } from "~/models/tags";
-import { useTags, useTierInfo } from ".";
-import { useTool } from "..";
+import { useTags, useTierInfo, useTool } from ".";
 
 export function useTagPageViewModel() {
   const selectedFormTag = useSignal<TagModel | null>(null);
@@ -140,7 +139,6 @@ export function useTagPageViewModel() {
   useTask$(async ({ track }) => {
     track(() => [tags.value.effectTags, selectedFormTag.value, selectedEffectTagIds.value])
 
-    console.log("Calculating availability")
     const mappedTags = (tags.value.effectTags).map(async (tag) => {
       const availability = await getTagAvailability$(tag)
       return { ...tag, availability } as TagWithAvailability;

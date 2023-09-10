@@ -56,7 +56,7 @@ export default component$(() => {
                 explainer.id === result?.id ? result! : explainer
             );
         } else {
-            if (explainerStage.value === ExplainerStage.Tool) {
+            if (explainerStage.value === ExplainerStage.Tier) {
                 result = await createExplainer({
                     title: explainerTtitle.value,
                     text: explainerDescription.value,

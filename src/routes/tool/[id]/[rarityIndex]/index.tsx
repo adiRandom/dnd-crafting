@@ -1,5 +1,5 @@
 import { TagType, isTagAvailable } from "~/models/tags";
-import { getExplainerForTagStage, getTags, getTierInfoForRarity } from "~/server/repository";
+import { getExplainerForTagStage, getTags, getTierInfoForRarity, getTool } from "~/server/repository";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { ModalModel } from "~/models/ModalModel";
 import { component$ } from "@builder.io/qwik";
@@ -20,7 +20,12 @@ export const useTags = routeLoader$(async (ev) => {
         formTags: tags.filter((tag) => tag.type === TagType.FormTag),
         effectTags: tags.filter((tag) => tag.type === TagType.EffectTag),
     }
-})
+}) 
+
+export const useTool = routeLoader$(async (ev) => {
+    const toolId = ev.params.id;
+    return await getTool(parseInt(toolId));
+});
 
 export const useTierInfo = routeLoader$(async (ev) => {
     const tierIndex = ev.params.rarityIndex;
@@ -67,7 +72,7 @@ export default component$(() => {
     useIntroModal(explainer.value);
 
     if (tagsToShow.value.length === 0) {
-        return <div>Loading...</div>;
+        return <div class={styles.loading}>Loading...</div>;
     }
 
     if (showItemCard.value && rarityLevel && selectedFormTag.value) {
