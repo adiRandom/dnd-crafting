@@ -42,6 +42,3 @@ lerna-debug.log*
 
 .env
 dev.db
-
-# Netlify
-.netlify
