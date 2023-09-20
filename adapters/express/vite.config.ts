@@ -7,7 +7,7 @@ export default extendConfig(baseConfig, () => {
     build: {
       ssr: true,
       rollupOptions: {
-        input: ["src/functions/express.ts", "@qwik-city-plan"],
+        input: ["src/functions/express.tsx", "@qwik-city-plan"],
       },
     },
     plugins: [nodeServerAdapter({ name: "express" })],
