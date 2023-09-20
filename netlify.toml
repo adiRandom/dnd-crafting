@@ -6,4 +6,4 @@
   force = true
   from = "/*"
   status = 200
-  to = "/src/functions/express/:splat"
+  to = "/.netlify/functions/express/:splat"
