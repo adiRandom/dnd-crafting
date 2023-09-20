@@ -42,8 +42,3 @@ lerna-debug.log*
 
 .env
 dev.db
-
-dist
-server
-# Local Netlify folder
-.netlify
