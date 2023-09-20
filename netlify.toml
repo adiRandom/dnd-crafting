@@ -1,5 +1,5 @@
 [functions]
-  external_node_modules = ["express","@qwik-city-plan","@qwik-client-manifest"]
+  external_node_modules = ["express","@qwik-city-plan","@qwik-client-manifest","@qwik-city-not-found-paths","@qwik-city-static-paths","@qwik-city-sw-register"]
   node_bundler = "esbuild"
   directory = "src/functions"
 [[redirects]]
