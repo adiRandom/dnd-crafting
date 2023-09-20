@@ -8,8 +8,9 @@ import type { TagModel } from "~/models/tags";
 import { TagType, doesTagTakeAllSlots } from "~/models/tags";
 import type { Tool } from "~/models/tool";
 
+const prisma = new PrismaClient()
+
 export const getTierInfo = server$(async () => {
-  const prisma = new PrismaClient()
 
   const tiers = await prisma.tier_info.findMany()
 
@@ -27,7 +28,6 @@ export const getTierInfo = server$(async () => {
 })
 
 export const getTierInfoForRarity = server$(async (rarityIndex: number) => {
-  const prisma = new PrismaClient()
 
   const tier = await prisma.tier_info.findUnique({
     where: {
@@ -51,7 +51,6 @@ export const getTierInfoForRarity = server$(async (rarityIndex: number) => {
 })
 
 export const getTags = server$(async (toolId: number) => {
-  const prisma = new PrismaClient()
 
   const tags = await prisma.tags.findMany({
     where: {
@@ -79,8 +78,6 @@ export const getTags = server$(async (toolId: number) => {
 })
 
 export const getAllTags = server$(async () => {
-  const prisma = new PrismaClient()
-
   const tags = await prisma.tags.findMany()
 
   return Promise.all(tags.map(async tag => {
@@ -109,8 +106,6 @@ export async function getIconUrl(formTagId: number, rarityIndex: number): Promis
 }
 
 export const getExplainers = server$(async () => {
-  const prisma = new PrismaClient()
-
   const explainers = await prisma.explainers.findMany()
 
   return explainers.map(explainer => {
@@ -134,8 +129,6 @@ export const getExplainers = server$(async () => {
 })
 
 export const getExplainerForTierStage = server$(async (toolId: number) => {
-  const prisma = new PrismaClient()
-
   const explainer = await prisma.explainers.findFirst({
     where: {
       dependency_type: "TOOL",
@@ -148,8 +141,6 @@ export const getExplainerForTierStage = server$(async (toolId: number) => {
 })
 
 export const getExplainerForTagStage = server$(async () => {
-  const prisma = new PrismaClient()
-
   const explainer = await prisma.explainers.findFirst({
     where: {
       stage: ExplainerStage.Tags
@@ -161,8 +152,6 @@ export const getExplainerForTagStage = server$(async () => {
 
 
 export const getTools = server$(async () => {
-  const prisma = new PrismaClient()
-
   const tools = await prisma.tools.findMany()
 
   return tools.map(tool => {
@@ -175,8 +164,6 @@ export const getTools = server$(async () => {
 })
 
 export const getTool = server$(async (toolId: number) => {
-  const prisma = new PrismaClient()
-
   const tool = await prisma.tools.findUnique({
     where: {
       id: toolId
@@ -195,8 +182,6 @@ export const getTool = server$(async (toolId: number) => {
 })
 
 export const checkPasscode = server$(async (key: string) => {
-  const prisma = new PrismaClient()
-
   const passcode = await prisma.admin.findFirst({
     where: {
       passcode: key
@@ -207,8 +192,6 @@ export const checkPasscode = server$(async (key: string) => {
 })
 
 export const updateTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: Tool) => {
-  const prisma = new PrismaClient()
-
   const updatedTool = await prisma.tools.update({
     where: {
       id: tool.id
@@ -227,8 +210,6 @@ export const updateTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: To
 })
 
 export const createTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: Tool) => {
-  const prisma = new PrismaClient()
-
   const createdTool = await prisma.tools.create({
     data: {
       name: tool.name,
@@ -244,8 +225,6 @@ export const createTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: To
 })
 
 export const deleteTool = server$<(toolId: number) => Promise<void>>(async (toolId: number) => {
-  const prisma = new PrismaClient()
-
   await prisma.tools.delete({
     where: {
       id: toolId
@@ -291,8 +270,6 @@ export const updateExplainer = server$<(explainer: Explainer) => Promise<Explain
 
 export const createExplainer = server$<(explainer: Explainer) => Promise<Explainer>>(
   async (explainer: Explainer) => {
-    const prisma = new PrismaClient()
-
     const createdExplainer = await prisma.explainers.create({
       data: {
         title: explainer.title,
@@ -323,8 +300,6 @@ export const createExplainer = server$<(explainer: Explainer) => Promise<Explain
 
 export const deleteExplainer = server$<(explainerId: number) => Promise<void>>(
   async (explainerId: number) => {
-    const prisma = new PrismaClient()
-
     await prisma.explainers.delete({
       where: {
         id: explainerId
@@ -334,8 +309,6 @@ export const deleteExplainer = server$<(explainerId: number) => Promise<void>>(
 
 export const updateTierInfo = server$<(tierInfo: ItemTierInfo, rarity: Rarity) => Promise<ItemTierInfo>>(
   async (tierInfo: ItemTierInfo, rarity: Rarity) => {
-    const prisma = new PrismaClient()
-
     const updatedTierInfo = await prisma.tier_info.update({
       where: {
         id: RARITIES.indexOf(rarity) + 1
@@ -362,8 +335,6 @@ export const updateTierInfo = server$<(tierInfo: ItemTierInfo, rarity: Rarity) =
 )
 
 export const updateTag = server$<(tag: TagModel) => Promise<TagModel>>(async (tag: TagModel) => {
-  const prisma = new PrismaClient()
-
   const updatedTag = await prisma.tags.update({
     where: {
       id: tag.id
@@ -415,8 +386,6 @@ export const updateTag = server$<(tag: TagModel) => Promise<TagModel>>(async (ta
 
 export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
   async (tag: TagModel) => {
-    const prisma = new PrismaClient()
-
     const createdTag = await prisma.tags.create({
       data: {
         name: tag.name,
@@ -452,8 +421,6 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
 )
 
 export const deleteTag = server$<(tagId: number) => Promise<void>>(async (tagId: number) => {
-  const prisma = new PrismaClient()
-
   await prisma.tags.delete({
     where: {
       id: tagId
