@@ -40,11 +40,15 @@ export default component$(() => {
 
     const onSubmit = $(async () => {
         if (isEdit.value) {
+            console.log(selectedRarityIndex.value)
             const result = await updateImage({
                 ...selectedImage.value!,
                 url: imageUrl.value,
-                tagId: selectedTagId.value!,
-                rarityIndex: selectedRarityIndex.value!,
+                formTagId: selectedTagId.value!,
+                formTagName: formTags.value.find(
+                    (tag) => tag.id === selectedTagId.value
+                )?.name,
+                rarity: RARITIES[selectedRarityIndex.value!],
             } as ImageModel);
 
             images.value = images.value.map((image) =>
@@ -112,14 +116,16 @@ export default component$(() => {
                                 class={styles.image}
                                 src={image.url}
                                 alt={image.formTagName}
-                                height={24}
-                                width={24}
+                                height={64}
+                                width={64}
                             />
                         </div>
                     ))}
                 </div>
                 <div class={styles.rightPane}>
                     <h2>{isEdit.value ? "Edit Image" : "Add Image"}</h2>
+
+                    <p class={styles.inputLabel}>Image Url</p>
                     <input
                         class={styles.input}
                         type="text"
@@ -133,13 +139,15 @@ export default component$(() => {
                         width={imageUrl.value !== "" ? 64 : 0}
                         height={imageUrl.value !== "" ? 64 : 0}
                     />
+                    <p class={styles.inputLabel}>Form Tag</p>
                     <select
                         class={styles.selectInput}
-                        value={selectedTagId.value ?? undefined}
+                        value={selectedTagId.value ?? ""}
                         onChange$={(ev) =>
                             (selectedTagId.value = parseInt(ev.target.value))
                         }
                     >
+                        <option value={""}>Select a form tag</option>
                         {formTags.value.map((tag) => (
                             <option key={tag.id} value={tag.id}>
                                 {tag.name}
@@ -147,15 +155,18 @@ export default component$(() => {
                         ))}
                     </select>
 
+                    <p class={styles.inputLabel}>Rarity</p>
+
                     <select
                         class={styles.selectInput}
-                        value={selectedRarityIndex.value ?? undefined}
+                        value={selectedRarityIndex.value ?? ""}
                         onChange$={(ev) =>
                             (selectedRarityIndex.value = parseInt(
                                 ev.target.value
                             ))
                         }
                     >
+                        <option value={""}>Select a rarity</option>
                         {RARITIES.map((rarity, index) => (
                             <option key={rarity} value={index}>
                                 {rarity}

@@ -576,6 +576,7 @@ export const deleteImage = server$<(imageId: number) => Promise<void>>(async (im
 export const updateImage = server$<(image: ImageModel) => Promise<ImageModel>>(async (image: ImageModel) => {
   const prisma = getPrisma();
 
+  console.log(image)
   const updatedImage = await prisma.images.update({
     where: {
       id: image.id

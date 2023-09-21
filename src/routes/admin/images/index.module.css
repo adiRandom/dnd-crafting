@@ -71,10 +71,6 @@
   gap: 12px;
 }
 
-.icon{
-  width: 24px;
-  height: 24px;
-}
 
 .rightPane{
   display: flex;
@@ -106,6 +102,12 @@
   flex-direction: row;
   gap: 12px;
   justify-content: flex-start;
+}
+
+.inputLabel{
+  font-size: 18px;
+  color: var(--primary-text);
+  margin: 2px;
 }
 
 
