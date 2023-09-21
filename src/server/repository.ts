@@ -1,6 +1,7 @@
 import { server$ } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
 import { type Explainer, ExplainerStage, isToolExplainer } from "~/models/explainer";
+import { ImageModel } from "~/models/imageModel";
 import type { ItemTierInfo } from "~/models/itemTierInfo";
 import type { Rarity } from "~/models/rarity";
 import { RARITIES } from "~/models/rarity";
@@ -94,28 +95,37 @@ export const getAllTags = server$(async () => {
   const tags = await prisma.tags.findMany();
 
   return Promise.all(tags.map(async tag => {
-      return {
-        id: tag.id,
-        name: tag.name,
-        type: tag.is_form ? TagType.FormTag : TagType.EffectTag,
-        minRarity: RARITIES.find((_, index) => index === tag.min_rarity_id),
-        slotCost: tag.cost_takes_all ? { takeAll: true } : { value: tag.cost_value },
-        tagRequirementId: (await prisma.effect_tag_deps.findMany({
-          where: {
-            effect_tag_id: tag.id
-          }
-        })).map(tagDep => tagDep.form_tag_id),
-        description: tag.description,
-        itemName: tag.item_name,
-        toolId: tag.tool_id
-      } as TagModel;
-    }
+    return {
+      id: tag.id,
+      name: tag.name,
+      type: tag.is_form ? TagType.FormTag : TagType.EffectTag,
+      minRarity: RARITIES.find((_, index) => index === tag.min_rarity_id),
+      slotCost: tag.cost_takes_all ? { takeAll: true } : { value: tag.cost_value },
+      tagRequirementId: (await prisma.effect_tag_deps.findMany({
+        where: {
+          effect_tag_id: tag.id
+        }
+      })).map(tagDep => tagDep.form_tag_id),
+      description: tag.description,
+      itemName: tag.item_name,
+      toolId: tag.tool_id
+    } as TagModel;
+  }
   ));
 
 });
 
 export async function getIconUrl(formTagId: number, rarityIndex: number): Promise<string> {
-  return Promise.resolve(`https://static.vecteezy.com/system/resources/previews/012/014/529/non_2x/sword-pixel-art-free-vector.jpg`);
+  const prisma = getPrisma();
+
+  const imageModel = await prisma.images.findFirst({
+    where: {
+      form_tag_id: formTagId,
+      rarity_index: rarityIndex
+    }
+  });
+
+  return imageModel?.url ?? "";
 }
 
 export const getExplainers = server$(async () => {
@@ -345,6 +355,8 @@ export const deleteExplainer = server$<(explainerId: number) => Promise<void>>(
 
 export const updateTierInfo = server$<(tierInfo: ItemTierInfo, rarity: Rarity) => Promise<ItemTierInfo>>(
   async (tierInfo: ItemTierInfo, rarity: Rarity) => {
+    const prisma = getPrisma();
+
     const updatedTierInfo = await prisma.tier_info.update({
       where: {
         id: RARITIES.indexOf(rarity) + 1
@@ -371,55 +383,55 @@ export const updateTierInfo = server$<(tierInfo: ItemTierInfo, rarity: Rarity) =
 );
 
 export const updateTag = server$<(tag: TagModel) => Promise<TagModel>>(async (tag: TagModel) => {
-    const prisma = getPrisma();
+  const prisma = getPrisma();
 
-    const updatedTag = await prisma.tags.update({
+  const updatedTag = await prisma.tags.update({
+    where: {
+      id: tag.id
+    },
+    data: {
+      name: tag.name,
+      is_form: tag.type === TagType.FormTag ? 1 : 0,
+      min_rarity_id: RARITIES.indexOf(tag.minRarity),
+      description: tag.description,
+      item_name: tag.itemName,
+      cost_value: doesTagTakeAllSlots(tag.slotCost) ? null : tag.slotCost.value,
+      cost_takes_all: doesTagTakeAllSlots(tag.slotCost) ? 1 : 0,
+      tool_id: tag.toolId
+    }
+  });
+
+  if (tag.type === TagType.EffectTag) {
+    // Update the tag requirements relationships
+    await prisma.effect_tag_deps.deleteMany({
       where: {
-        id: tag.id
-      },
-      data: {
-        name: tag.name,
-        is_form: tag.type === TagType.FormTag ? 1 : 0,
-        min_rarity_id: RARITIES.indexOf(tag.minRarity),
-        description: tag.description,
-        item_name: tag.itemName,
-        cost_value: doesTagTakeAllSlots(tag.slotCost) ? null : tag.slotCost.value,
-        cost_takes_all: doesTagTakeAllSlots(tag.slotCost) ? 1 : 0,
-        tool_id: tag.toolId
+        effect_tag_id: tag.id
       }
     });
 
-    if (tag.type === TagType.EffectTag) {
-      // Update the tag requirements relationships
-      await prisma.effect_tag_deps.deleteMany({
-        where: {
-          effect_tag_id: tag.id
-        }
-      });
-
-      await Promise.all(tag.tagRequirementId.map(tagRequirementId => prisma.effect_tag_deps.create({
-        data: {
-          effect_tag_id: tag.id,
-          form_tag_id: tagRequirementId
-        }
-      })));
-    }
-
-    return {
-      id: updatedTag.id,
-      name: updatedTag.name,
-      type: updatedTag.is_form ? TagType.FormTag : TagType.EffectTag,
-      minRarity: RARITIES[updatedTag.min_rarity_id - 1],
-      slotCost: updatedTag.cost_takes_all ? { takeAll: true } : { value: updatedTag.cost_value },
-      tagRequirementId: (await prisma.effect_tag_deps.findMany({
-        where: {
-          effect_tag_id: updatedTag.id
-        }
-      })).map(tagDep => tagDep.form_tag_id),
-      description: updatedTag.description,
-      itemName: updatedTag.item_name
-    } as TagModel;
+    await Promise.all(tag.tagRequirementId.map(tagRequirementId => prisma.effect_tag_deps.create({
+      data: {
+        effect_tag_id: tag.id,
+        form_tag_id: tagRequirementId
+      }
+    })));
   }
+
+  return {
+    id: updatedTag.id,
+    name: updatedTag.name,
+    type: updatedTag.is_form ? TagType.FormTag : TagType.EffectTag,
+    minRarity: RARITIES[updatedTag.min_rarity_id - 1],
+    slotCost: updatedTag.cost_takes_all ? { takeAll: true } : { value: updatedTag.cost_value },
+    tagRequirementId: (await prisma.effect_tag_deps.findMany({
+      where: {
+        effect_tag_id: updatedTag.id
+      }
+    })).map(tagDep => tagDep.form_tag_id),
+    description: updatedTag.description,
+    itemName: updatedTag.item_name
+  } as TagModel;
+}
 );
 
 export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
@@ -461,12 +473,125 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
 );
 
 export const deleteTag = server$<(tagId: number) => Promise<void>>(async (tagId: number) => {
+  const prisma = getPrisma();
+
+  await prisma.tags.delete({
+    where: {
+      id: tagId
+    }
+  });
+}
+);
+
+export const getImages = server$(async () => {
+  const prisma = getPrisma();
+
+  const images = await prisma.images.findMany({
+    include: {
+      tags: true
+    }
+  });
+
+  return images.map(image => {
+    return {
+      id: image.id,
+      url: image.url,
+      formTagId: image.form_tag_id,
+      formTagName: image.tags.name,
+      rarity: RARITIES[image.rarity_index]
+    } as ImageModel;
+  });
+}
+);
+
+const getTagById = server$<(tagId: number) => Promise<TagModel | null>>(async (tagId: number) => {
+
+  const prisma = getPrisma();
+
+  const tag = await prisma.tags.findUnique({
+    where: {
+      id: tagId
+    }
+  });
+
+  if (!tag) {
+    return null;
+  }
+
+  return {
+    id: tag.id,
+    name: tag.name,
+    type: tag.is_form ? TagType.FormTag : TagType.EffectTag,
+    minRarity: RARITIES.find((_, index) => index === tag.min_rarity_id),
+    slotCost: tag.cost_takes_all ? { takeAll: true } : { value: tag.cost_value },
+    tagRequirementId: (await prisma.effect_tag_deps.findMany({
+      where: {
+        effect_tag_id: tag.id
+      }
+    })).map(tagDep => tagDep.form_tag_id),
+    description: tag.description,
+    itemName: tag.item_name,
+    toolId: tag.tool_id
+  } as TagModel
+});
+
+export const saveImage = server$<(image: { url: string, formTagId: number, rarityIndex: number }) => Promise<ImageModel>>(
+  async (image: { url: string, formTagId: number, rarityIndex: number }) => {
     const prisma = getPrisma();
 
-    await prisma.tags.delete({
-      where: {
-        id: tagId
+    const result = await prisma.images.create({
+      data: {
+        url: image.url,
+        form_tag_id: image.formTagId,
+        rarity_index: image.rarityIndex
       }
     });
+
+    const tag = await getTagById(image.formTagId);
+
+    if (!tag) {
+      throw new Error("Tag not found");
+    }
+
+    return {
+      id: result.id,
+      url: result.url,
+      formTagId: result.form_tag_id,
+      formTagName: tag.name,
+      rarity: RARITIES[result.rarity_index]
+    } as ImageModel
   }
 );
+
+export const deleteImage = server$<(imageId: number) => Promise<void>>(async (imageId: number) => {
+  const prisma = getPrisma();
+
+  await prisma.images.delete({
+    where: {
+      id: imageId
+    }
+  });
+});
+
+export const updateImage = server$<(image: ImageModel) => Promise<ImageModel>>(async (image: ImageModel) => {
+  const prisma = getPrisma();
+
+  const updatedImage = await prisma.images.update({
+    where: {
+      id: image.id
+    },
+    data: {
+      url: image.url,
+      form_tag_id: image.formTagId,
+      rarity_index: RARITIES.indexOf(image.rarity)
+    }
+  });
+
+  return {
+    id: updatedImage.id,
+    url: updatedImage.url,
+    formTagId: updatedImage.form_tag_id,
+    formTagName: image.formTagName,
+    rarity: RARITIES[updatedImage.rarity_index]
+  } as ImageModel;
+})

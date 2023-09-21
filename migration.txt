@@ -1,0 +1,11 @@
+create table images
+(
+    id           integer not null
+        constraint images_pk
+            primary key autoincrement,
+    url          TEXT    not null,
+    rarity_index integer not null,
+    form_tag_id  integer not null
+        constraint form_tag_fk
+            references tags
+);

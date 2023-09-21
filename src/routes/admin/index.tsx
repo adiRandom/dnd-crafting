@@ -1,5 +1,11 @@
 import { component$, useSignal, $ } from "@builder.io/qwik";
-import { Link, routeAction$, routeLoader$, z, zod$ } from "@builder.io/qwik-city";
+import {
+    Link,
+    routeAction$,
+    routeLoader$,
+    z,
+    zod$,
+} from "@builder.io/qwik-city";
 import { checkPasscode as remoteCheckPasscode } from "~/server/repository";
 import styles from "./admin.module.css";
 import pageSyles from "./index.module.css";
@@ -22,7 +28,9 @@ export const useCheckPasscode = routeAction$(
 
 export const useInitialPasscode = routeLoader$(async (ev) => {
     return {
-        valid: await remoteCheckPasscode(ev.cookie.get("passcode")?.value ?? ""),
+        valid: await remoteCheckPasscode(
+            ev.cookie.get("passcode")?.value ?? ""
+        ),
     };
 });
 
@@ -53,6 +61,9 @@ export default component$(() => {
                     </Link>
                     <Link class={pageSyles.link} href="/admin/tiers">
                         Tiers
+                    </Link>
+                    <Link class={pageSyles.link} href="/admin/images">
+                        Images
                     </Link>
                 </div>
             ) : (

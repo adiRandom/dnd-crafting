@@ -16,8 +16,8 @@ model effect_tag_deps {
   id                                       Int  @id @default(autoincrement())
   form_tag_id                              Int
   effect_tag_id                            Int
-  tags_effect_tag_deps_effect_tag_idTotags tags @relation("effect_tag_deps_effect_tag_idTotags", fields: [effect_tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tags_effect_tag_deps_form_tag_idTotags   tags @relation("effect_tag_deps_form_tag_idTotags", fields: [form_tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tags_effect_tag_deps_effect_tag_idTotags tags @relation("effect_tag_deps_effect_tag_idTotags", fields: [effect_tag_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tags_effect_tag_deps_form_tag_idTotags   tags @relation("effect_tag_deps_form_tag_idTotags", fields: [form_tag_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model explainers {
@@ -41,6 +41,7 @@ model tags {
   tool_id                                             Int
   effect_tag_deps_effect_tag_deps_effect_tag_idTotags effect_tag_deps[] @relation("effect_tag_deps_effect_tag_idTotags")
   effect_tag_deps_effect_tag_deps_form_tag_idTotags   effect_tag_deps[] @relation("effect_tag_deps_form_tag_idTotags")
+  images                                              images[]
   tools                                               tools             @relation(fields: [tool_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -60,4 +61,12 @@ model tools {
   name  String
   emoji String?
   tags  tags[]
+}
+
+model images {
+  id           Int    @id @default(autoincrement())
+  url          String
+  rarity_index Int
+  form_tag_id  Int
+  tags         tags   @relation(fields: [form_tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
