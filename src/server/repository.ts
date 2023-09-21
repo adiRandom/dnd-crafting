@@ -115,7 +115,7 @@ export const getAllTags = server$(async () => {
 
 });
 
-export async function getIconUrl(formTagId: number, rarityIndex: number): Promise<string> {
+export const getIconUrl = server$(async( formTagId: number, rarityIndex: number): Promise<string> => {
   const prisma = getPrisma();
 
   const imageModel = await prisma.images.findFirst({
@@ -126,7 +126,7 @@ export async function getIconUrl(formTagId: number, rarityIndex: number): Promis
   });
 
   return imageModel?.url ?? "";
-}
+})
 
 export const getExplainers = server$(async () => {
   const prisma = getPrisma();
