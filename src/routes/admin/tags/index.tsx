@@ -96,6 +96,8 @@ export default component$(() => {
             tags.value = tags.value.map((tag) =>
                 tag.id === result?.id ? result! : tag
             );
+
+            console.log(tags.value)
         } else {
             const result = await createTag({
                 id: 0,

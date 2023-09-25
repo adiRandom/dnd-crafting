@@ -1,5 +1,10 @@
 import { TagType, isTagAvailable } from "~/models/tags";
-import { getExplainerForTagStage, getTags, getTierInfoForRarity, getTool } from "~/server/repository";
+import {
+    getExplainerForTagStage,
+    getTags,
+    getTierInfoForRarity,
+    getTool,
+} from "~/server/repository";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { ModalModel } from "~/models/ModalModel";
 import { component$ } from "@builder.io/qwik";
@@ -12,6 +17,7 @@ import { capitalize } from "~/lib/stringUtils";
 import { ICON } from "~/theme/color";
 import { useTagPageViewModel } from "./useTagPageViewModel";
 import styles from "./styles.module.css";
+import { marked } from "marked";
 
 export const useTags = routeLoader$(async (ev) => {
     const toolId = ev.params.id;
@@ -19,8 +25,8 @@ export const useTags = routeLoader$(async (ev) => {
     return {
         formTags: tags.filter((tag) => tag.type === TagType.FormTag),
         effectTags: tags.filter((tag) => tag.type === TagType.EffectTag),
-    }
-}) 
+    };
+});
 
 export const useTool = routeLoader$(async (ev) => {
     const toolId = ev.params.id;
@@ -30,23 +36,24 @@ export const useTool = routeLoader$(async (ev) => {
 export const useTierInfo = routeLoader$(async (ev) => {
     const tierIndex = ev.params.rarityIndex;
     return await getTierInfoForRarity(parseInt(tierIndex));
-})
+});
 
 export const useExplainModal = routeLoader$(async () => {
-    const explainer = await getExplainerForTagStage()
+    const explainer = await getExplainerForTagStage();
 
-    return explainer ? {
-        title: explainer.title,
-        content: explainer.text,
-        button: "Add Tags",
-    } as ModalModel : {
-        title: `Tag Rules`,
-        content:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
-        button: "Add Tags",
-    } as ModalModel
-})
-
+    return explainer
+        ? ({
+              title: explainer.title,
+              content: explainer.text,
+              button: "Add Tags",
+          } as ModalModel)
+        : ({
+              title: `Tag Rules`,
+              content:
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+              button: "Add Tags",
+          } as ModalModel);
+});
 
 export default component$(() => {
     const {
@@ -92,14 +99,14 @@ export default component$(() => {
                     onClick$={print}
                 />
             </div>
-        );  
+        );
     }
 
     return (
         <div class={styles.main}>
             <h1 class={styles.title}>Select a form tag</h1>
             <h2 class={styles.subtitle}>
-                {capitalize(toolName.value??"")} Tools ➡ {rarityLevel}
+                {capitalize(toolName.value ?? "")} Tools ➡ {rarityLevel}
             </h2>
             <h2 class={styles.slots}>
                 Slots : {remainingSlots.value} / {allSlots}
@@ -154,9 +161,9 @@ export default component$(() => {
                             >{`Cost: ${formatedCostInfoTooltip.value}`}</h3>
                             <div
                                 class={styles.description}
-                                dangerouslySetInnerHTML={
+                                dangerouslySetInnerHTML={marked.parse(
                                     showInfoForTag.value.description
-                                }
+                                )}
                             />
                             <div class={styles.missingContainer}>
                                 {showInfoForTag.value.availability.map(

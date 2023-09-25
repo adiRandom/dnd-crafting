@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.2.0",
-    "html2canvas": "^1.4.1"
+    "html2canvas": "^1.4.1",
+    "marked": "^9.0.3"
   }
 }

@@ -104,7 +104,7 @@ export default component$(() => {
                                 ? itemTiers.value[selectedRarity.value]
                                       .timeInDays
                                 : ""
-                        }`}</p>
+                        } Days`}</p>
                     </div>
                     <div class={styles.tagContainer}>
                         <h2 class={styles.tagHeader}>

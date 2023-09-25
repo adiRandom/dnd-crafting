@@ -169,9 +169,9 @@ export default component$(() => {
                             ) as ExplainerStage)
                         }
                     >
-                        <option value={ExplainerStage.Tool}>Tool</option>
-                        <option value={ExplainerStage.Tags}>Tag</option>
-                        <option value={ExplainerStage.Tier}>Tier</option>
+                        <option value={ExplainerStage.Tool}>1. Tool</option>
+                        <option value={ExplainerStage.Tier}>2. Tier</option>
+                        <option value={ExplainerStage.Tags}>3. Tag</option>
                     </select>
                     {explainerStage.value === ExplainerStage.Tier && (
                         <select

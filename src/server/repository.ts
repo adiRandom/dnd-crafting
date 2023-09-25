@@ -429,7 +429,8 @@ export const updateTag = server$<(tag: TagModel) => Promise<TagModel>>(async (ta
       }
     })).map(tagDep => tagDep.form_tag_id),
     description: updatedTag.description,
-    itemName: updatedTag.item_name
+    itemName: updatedTag.item_name,
+    toolId: updatedTag.tool_id
   } as TagModel;
 }
 );
