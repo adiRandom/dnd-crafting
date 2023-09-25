@@ -56,7 +56,7 @@ const Modal = component$(
                                 <p
                                     dangerouslySetInnerHTML={(
                                         window as any
-                                    ).marked.parse(model.content)}
+                                    )?.marked.parse(model.content)}
                                 >
                                     {}
                                 </p>

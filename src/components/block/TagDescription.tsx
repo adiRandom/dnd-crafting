@@ -11,7 +11,7 @@ const TagDescription = component$((props: Props) => {
             <h1 class={styles.tagName}>{props.tag.name}</h1>
             <p
                 class={styles.tagDescription}
-                dangerouslySetInnerHTML={(window as any).marked.parse(
+                dangerouslySetInnerHTML={(window as any)?.marked.parse(
                     props.tag.description
                 )}
             ></p>

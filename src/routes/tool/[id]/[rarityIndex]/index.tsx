@@ -161,7 +161,7 @@ export default component$(() => {
                             >{`Cost: ${formatedCostInfoTooltip.value}`}</h3>
                             <div
                                 class={styles.description}
-                                dangerouslySetInnerHTML={(window as any).marked.parse(
+                                dangerouslySetInnerHTML={(window as any)?.marked.parse(
                                     showInfoForTag.value.description
                                 )}
                             />
