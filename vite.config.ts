@@ -5,6 +5,11 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(() => {
   return {
+    build: {
+      rollupOptions: {
+        external: ['marked']
+      }
+    },
     plugins: [qwikCity(), qwikVite(), tsconfigPaths()],
     preview: {
       headers: {
