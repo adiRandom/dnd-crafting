@@ -34,6 +34,7 @@ export default component$(() => {
             </head>
             <body lang="en">
                 <RouterOutlet />
+                <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
             </body>
         </QwikCityProvider>
     );
