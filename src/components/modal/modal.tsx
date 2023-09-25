@@ -10,7 +10,6 @@ import { useCssClassNameAnimation } from "~/hooks/useCssClassNameAnimation";
 import type { ModalModel } from "~/models/ModalModel";
 import { useDebouncedSignal } from "~/hooks/useDebouncedSignal";
 import { PrimaryButton } from "../ui/buttons/primaryButton";
-import {marked} from "marked";
 
 export type ModalContext = {
     openModal$: PropFunction<(model: ModalModel) => void>;
@@ -55,9 +54,9 @@ const Modal = component$(
                             <h1>{model.title}</h1>
                             <div id="content">
                                 <p
-                                    dangerouslySetInnerHTML={marked.parse(
-                                        model.content
-                                    )}
+                                    dangerouslySetInnerHTML={(
+                                        window as any
+                                    ).marked.parse(model.content)}
                                 >
                                     {}
                                 </p>

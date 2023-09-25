@@ -17,7 +17,7 @@ import { capitalize } from "~/lib/stringUtils";
 import { ICON } from "~/theme/color";
 import { useTagPageViewModel } from "./useTagPageViewModel";
 import styles from "./styles.module.css";
-import { marked } from "marked";
+
 
 export const useTags = routeLoader$(async (ev) => {
     const toolId = ev.params.id;
@@ -161,7 +161,7 @@ export default component$(() => {
                             >{`Cost: ${formatedCostInfoTooltip.value}`}</h3>
                             <div
                                 class={styles.description}
-                                dangerouslySetInnerHTML={marked.parse(
+                                dangerouslySetInnerHTML={(window as any).marked.parse(
                                     showInfoForTag.value.description
                                 )}
                             />
