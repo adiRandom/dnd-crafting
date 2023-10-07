@@ -3,9 +3,13 @@ import { ExplainerTable } from "./explainerTable";
 export type Explainer = {
   id: number;
   title: string;
+  /**
+   *@Deprecated
+   */
   text: string;
   toolId: number;
   table?: ExplainerTable;
+  blocks: (ExplainerTable | string)[];
   stage: ExplainerStage
 }
   | {

@@ -136,4 +136,5 @@
     padding-right: 32px;
     box-sizing: border-box;
     z-index: 1;
+    position: relative;
 }

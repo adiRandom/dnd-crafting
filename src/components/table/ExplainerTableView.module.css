@@ -2,6 +2,18 @@
     border: 2px solid var(--separator);
     width: 100%;
     background-color: var(--purple-container-bg);
+    color: var(--accent-text);
+}
+
+.emptyState{
+   border: 2px solid var(--separator);
+    width: 100%;
+    background-color: var(--purple-container-bg);
+    color: var(--accent-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 10vh;
 }
 
 .headerContainer {

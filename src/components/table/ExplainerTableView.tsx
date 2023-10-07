@@ -1,7 +1,7 @@
 import { component$ } from "@builder.io/qwik";
 import { ExplainerTable } from "~/models/explainerTable";
 import style from "./ExplainerTableView.module.css";
-import { type } from "os";
+
 
 export type ExplainerTableViewProps = {
     table: ExplainerTable;
@@ -10,6 +10,13 @@ export type ExplainerTableViewProps = {
 
 const ExplainerTableView = component$<ExplainerTableViewProps>(
     ({ table, isEditing = false }) => {
+        if (table.headers.length === 0) {
+            return (
+                <div class={style.emptyState}>
+                    Specify the number of columns before editing the table
+                </div>
+            );
+        }
         return (
             <div class={style.tableRoot}>
                 <div class={style.headerContainer}>
@@ -31,9 +38,12 @@ const ExplainerTableView = component$<ExplainerTableViewProps>(
                 <div class={style.bodyContainer}>
                     {table.rows.map((row, index) => (
                         <div class={style.row} key={index}>
-                            {row.map((cell) =>
+                            {row.map((cell, cellIndex) =>
                                 isEditing ? (
-                                    <div class={style.cellInputWrapper}>
+                                    <div
+                                        key={index * row.length + cellIndex}
+                                        class={style.cellInputWrapper}
+                                    >
                                         <span
                                             role="textarea"
                                             contentEditable="true"

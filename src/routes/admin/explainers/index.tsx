@@ -18,6 +18,8 @@ import {
 } from "~/models/explainer";
 import { ExplainerTable } from "~/models/explainerTable";
 import ExplainerTableView from "~/components/table/ExplainerTableView";
+import { ExplainerBlock } from "~/models/explianerBlock";
+import { getRandomInt } from "~/lib/numberUtils";
 
 export const useExplainers = routeLoader$(() => getExplainers());
 export const useTools = routeLoader$(() => getTools());
@@ -34,8 +36,7 @@ export default component$(() => {
     const explainerStage = useSignal(ExplainerStage.Tool);
     const explainerTool = useSignal<Tool | undefined>(tools.value[0]);
 
-    const explainerTable = useSignal<ExplainerTable | undefined>(undefined);
-    const explainerTableColumn = useSignal<number>(0);
+    const explainerBlocks = useSignal<ExplainerBlock[]>([]);
 
     const onSubmit = $(async () => {
         let result = null as Explainer | null;
@@ -119,73 +120,130 @@ export default component$(() => {
             : undefined;
     });
 
-    const onTableColumnCountChange = $(async (count: string) => {
-        const countNumber = Number.parseInt(count);
+    const onTableColumnCountChange = $(
+        async (count: string, blockId: number) => {
+            const countNumber = Number.parseInt(count);
 
-        if (Number.isNaN(countNumber) || countNumber < 0) {
-            return;
-        }
-
-        explainerTableColumn.value = countNumber;
-
-        const currentColumns = explainerTable.value?.headers.length ?? 0;
-        const diff = countNumber - currentColumns;
-
-        if (diff === 0) {
-            return;
-        }
-
-        const newTable: ExplainerTable = {
-            headers: [],
-            rows: [],
-        };
-
-        if (explainerTable.value !== undefined) {
-            newTable.headers = explainerTable.value.headers;
-            newTable.rows = explainerTable.value.rows;
-        }
-
-        if (diff > 0) {
-            for (let i = 0; i < diff; i++) {
-                newTable.headers.push("");
-                newTable.rows.forEach((row) => {
-                    row.push("");
-                });
+            if (Number.isNaN(countNumber) || countNumber < 0) {
+                return;
             }
-        } else {
-            for (let i = 0; i < -diff; i++) {
-                newTable.headers.pop();
-                newTable.rows.forEach((row) => {
-                    row.pop();
-                });
+
+            const table = explainerBlocks.value.find(
+                (block) => block.id === blockId
+            )?.content as ExplainerTable | undefined;
+
+            if (table === undefined) {
+                return;
             }
+
+            const currentColumns = table.headers.length;
+            const diff = countNumber - currentColumns;
+
+            if (diff === 0) {
+                return;
+            }
+
+            const newTable: ExplainerTable = {
+                ...table,
+            };
+
+            if (diff > 0) {
+                for (let i = 0; i < diff; i++) {
+                    newTable.headers.push("");
+                    newTable.rows.forEach((row) => {
+                        row.push("");
+                    });
+                }
+            } else {
+                for (let i = 0; i < -diff; i++) {
+                    newTable.headers.pop();
+                    newTable.rows.forEach((row) => {
+                        row.pop();
+                    });
+                }
+            }
+
+            console.log(newTable)
+
+            explainerBlocks.value = explainerBlocks.value.map((block) => {
+                if (block.id === blockId) {
+                    return { id:getRandomInt(), content: newTable };
+                } else {
+                    return block;
+                }
+            });
         }
+    );
 
-        explainerTable.value = newTable;
-    });
+    const addRow = $(async (blockId: number) => {
+        const table = explainerBlocks.value.find(
+            (block) => block.id === blockId
+        )?.content as ExplainerTable | undefined;
 
-    const addRow = $(async () => {
-        if (explainerTable.value === undefined) {
+        if (table === undefined) {
             return;
         }
-        const newTable: ExplainerTable = { ...explainerTable.value };
+
+        const newTable: ExplainerTable = { ...table };
 
         const newRow: string[] = [];
         newTable.headers.forEach(() => newRow.push(""));
         newTable.rows.push(newRow);
 
-        explainerTable.value = newTable;
+        explainerBlocks.value = explainerBlocks.value.map((block) => {
+            if (block.id === blockId) {
+                return { id:getRandomInt(), content: newTable };
+            } else {
+                return block;
+            }
+        });
     });
 
-    const removeRow = $(async () => {
-        if (explainerTable.value === undefined) {
+    const removeRow = $(async (blockId: number) => {
+        const table = explainerBlocks.value.find(
+            (block) => block.id === blockId
+        )?.content as ExplainerTable | undefined;
+
+        if (table === undefined) {
             return;
         }
-        const newTable: ExplainerTable = { ...explainerTable.value };
+
+        const newTable: ExplainerTable = { ...table };
 
         newTable.rows.pop();
 
-        explainerTable.value = newTable;
+        explainerBlocks.value = explainerBlocks.value.map((block) => {
+            if (block.id === blockId) {
+                return { id:getRandomInt(), content: newTable };
+            } else {
+                return block;
+            }
+        });
+    });
+
+    const addTableBlock = $(async () => {
+        const newBlocks = [...explainerBlocks.value];
+        newBlocks.push({
+            id: getRandomInt(),
+            content: { rows: [], headers: [] },
+        });
+        explainerBlocks.value = newBlocks;
+    });
+
+    const addTextBlock = $(async () => {
+        const newBlocks = [...explainerBlocks.value];
+        newBlocks.push({ id: getRandomInt(), content: "" });
+        explainerBlocks.value = newBlocks;
+    });
+
+    const onTextBlockChange = $((text: string, blockId: number) => {
+        const newBlocks = [...explainerBlocks.value];
+        newBlocks.forEach((block) => {
+            if (block.id === blockId) {
+                block.content = text;
+            }
+        });
+        explainerBlocks.value = newBlocks;
     });
 
     return (
@@ -224,14 +282,6 @@ export default component$(() => {
                             (explainerTtitle.value = ev.target.value)
                         }
                     />
-                    <textarea
-                        class={styles.textArea}
-                        placeholder="Explainer Text"
-                        value={explainerDescription.value}
-                        onChange$={(ev) =>
-                            (explainerDescription.value = ev.target.value)
-                        }
-                    />
                     <select
                         class={styles.selectInput}
                         value={explainerStage.value}
@@ -265,32 +315,80 @@ export default component$(() => {
                         </select>
                     )}
 
-                    <p class={styles.inputLabel}>Table column number</p>
-                    <input
-                        class={styles.input}
-                        type="text"
-                        value={explainerTableColumn.value}
-                        onChange$={(ev) =>
-                            onTableColumnCountChange(ev.target.value)
+                    {explainerBlocks.value.map((block) => {
+                        if (typeof block.content === "string") {
+                            return (
+                                <div key={block.id} class={styles.textBlock}>
+                                    <textarea
+                                        class={styles.textArea}
+                                        placeholder="Explainer Text"
+                                        value={block.content}
+                                        onChange$={(ev) =>
+                                            onTextBlockChange(
+                                                ev.target.value,
+                                                block.id
+                                            )
+                                        }
+                                    />
+                                </div>
+                            );
+                        } else {
+                            return (
+                                <div key={block.id}>
+                                    <p class={styles.inputLabel}>
+                                        Table column number
+                                    </p>
+                                    <input
+                                        class={styles.input}
+                                        type="text"
+                                        value={block.content.headers.length}
+                                        onChange$={(ev) =>
+                                            onTableColumnCountChange(
+                                                ev.target.value,
+                                                block.id
+                                            )
+                                        }
+                                    />
+
+                                    <div class={styles.tableContainer}>
+                                        <ExplainerTableView
+                                            isEditing
+                                            table={block.content}
+                                        />
+                                    </div>
+
+                                    {block.content.headers.length > 0 && (
+                                        <div class={styles.buttonBar}>
+                                            <PrimaryButton
+                                                onClick$={() =>
+                                                    addRow(block.id)
+                                                }
+                                                label="Add Row"
+                                            />
+                                            <PrimaryButton
+                                                class={[styles.deleteRow]}
+                                                onClick$={() =>
+                                                    removeRow(block.id)
+                                                }
+                                                label="Remove row"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            );
                         }
-                    />
+                    })}
 
-                    {explainerTable.value && (
-                        <div class={styles.tableContainer}>
-                            <ExplainerTableView isEditing table={explainerTable.value} />
-                        </div>
-                    )}
-
-                    {explainerTableColumn.value > 0 && (
-                        <div class={styles.buttonBar}>
-                            <PrimaryButton onClick$={addRow} label="Add Row" />
-                            <PrimaryButton
-                                class={[styles.deleteRow]}
-                                onClick$={removeRow}
-                                label="Remove row"
-                            />
-                        </div>
-                    )}
+                    <div class={styles.buttonBar}>
+                        <PrimaryButton
+                            onClick$={addTableBlock}
+                            label="Add table"
+                        />
+                        <PrimaryButton
+                            onClick$={addTextBlock}
+                            label="Add text"
+                        />
+                    </div>
 
                     <div class={styles.buttonBar}>
                         <PrimaryButton onClick$={onSubmit} label="Submit" />
