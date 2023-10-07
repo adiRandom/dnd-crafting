@@ -274,10 +274,10 @@ export default component$(() => {
                             onTableColumnCountChange(ev.target.value)
                         }
                     />
-    
+
                     {explainerTable.value && (
                         <div class={styles.tableContainer}>
-                            <ExplainerTableView table={explainerTable.value} />
+                            <ExplainerTableView isEditing table={explainerTable.value} />
                         </div>
                     )}
 

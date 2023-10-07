@@ -1,138 +1,139 @@
-.main{
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  overflow: hidden;
+.main {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
 }
 
-.panes{
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  width: 100%;
-  height: 100%;
+.panes {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
 }
 
-.leftPane{
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  height: 100%;
-  overflow: auto;
-  flex: 1;
+.leftPane {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    overflow: auto;
+    flex: 1;
 }
 
-.cell{
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  border-radius: 8px;
-  background-color: var(--primary-btn-transparent);
-  color: var(--primary-text);
-  border: 1px solid var(--separator);
-  font-size: 18px;
-  margin: 0 24px;
-  cursor: pointer;
+.cell {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: var(--primary-btn-transparent);
+    color: var(--primary-text);
+    border: 1px solid var(--separator);
+    font-size: 18px;
+    margin: 0 24px;
+    cursor: pointer;
 }
 
-.cell:hover{
-  background-color: var(--primary-btn);
-  color: var(--primary-text);
+.cell:hover {
+    background-color: var(--primary-btn);
+    color: var(--primary-text);
 }
 
-.selectedCell{
-  background-color: var(--primary-btn);
-  color: var(--primary-text);
+.selectedCell {
+    background-color: var(--primary-btn);
+    color: var(--primary-text);
 }
 
-.explainerName{
-  font-size: 24px;
+.explainerName {
+    font-size: 24px;
 }
 
-.explainerStage{
-  font-size: 18px;
+.explainerStage {
+    font-size: 18px;
 }
 
-.rightPane{
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  height: 80vh;
-  flex: 2;
-  overflow-y: scroll;
+.rightPane {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 80vh;
+    flex: 2;
+    overflow-y: scroll;
 }
 
-.input{
-  width: 50%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  box-sizing: border-box;
-  border-radius: 8px;
-  border-color: var(--separator);
-  font-size: 18px;
-  color:var(--accent-text);
+.input {
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border-color: var(--separator);
+    font-size: 18px;
+    color: var(--accent-text);
 }
 
-.textArea{
-  width: 70%; 
-  height: 300px;
-  padding: 12px 20px;
-  margin: 8px 0;
-  box-sizing: border-box;
-  border-radius: 8px;
-  border-color: var(--separator);
-  font-size: 18px;
-  color:var(--accent-text);
-  resize: none;
+.textArea {
+    width: 70%;
+    height: 300px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border-color: var(--separator);
+    font-size: 18px;
+    color: var(--accent-text);
+    resize: none;
+    min-height: 300px;
 }
 
-.delete{
-  background-color: var(--warning-text)!important;
-  color: var(--primary-text)!important;
-  border: none;
+.delete {
+    background-color: var(--warning-text) !important;
+    color: var(--primary-text) !important;
+    border: none;
 }
 
-.deleteRow{
-  background-color: var(--warning-text)!important;
-  color: var(--primary-text);;
-  border: none;
-  width: fit-content!important;
+.deleteRow {
+    background-color: var(--warning-text) !important;
+    color: var(--primary-text);
+    border: none;
+    width: fit-content !important;
 }
 
-.buttonBar{
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  justify-content: flex-start;
+.buttonBar {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: flex-start;
 }
 
-.selectInput{
-  width: 50%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  box-sizing: border-box;
-  border-radius: 8px;
-  border-color: var(--separator);
-  font-size: 18px;
-  color:var(--accent-text);
-  flex-shrink: 0;
+.selectInput {
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border-color: var(--separator);
+    font-size: 18px;
+    color: var(--accent-text);
+    flex-shrink: 0;
 }
 
-.inputLabel{
-  font-size: 18px;
-  color: var(--primary-text);
-  margin: 2px;
+.inputLabel {
+    font-size: 18px;
+    color: var(--primary-text);
+    margin: 2px;
 }
 
-.tableContainer{
-  width: 100%;
-  padding-right: 32px;
-  box-sizing: border-box;
-  z-index:1;
+.tableContainer {
+    width: 100%;
+    padding-right: 32px;
+    box-sizing: border-box;
+    z-index: 1;
 }
