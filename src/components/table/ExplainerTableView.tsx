@@ -2,14 +2,19 @@ import { component$ } from "@builder.io/qwik";
 import { ExplainerTable } from "~/models/explainerTable";
 import style from "./ExplainerTableView.module.css";
 
-
 export type ExplainerTableViewProps = {
     table: ExplainerTable;
     isEditing?: boolean;
+    onHeaderEdited$?: (value: string, index: number) => void;
+    onCellEdited$?: (
+        value: string,
+        rowIndex: number,
+        cellIndex: number
+    ) => void;
 };
 
 const ExplainerTableView = component$<ExplainerTableViewProps>(
-    ({ table, isEditing = false }) => {
+    ({ table, isEditing = false, onCellEdited$, onHeaderEdited$ }) => {
         if (table.headers.length === 0) {
             return (
                 <div class={style.emptyState}>
@@ -27,6 +32,10 @@ const ExplainerTableView = component$<ExplainerTableViewProps>(
                                 type="text"
                                 placeholder="Type content"
                                 class={style.headerInput}
+                                onChange$={(ev) => {
+                                    onHeaderEdited$?.(ev.target.value, index);
+                                }}
+                                value={header}
                             />
                         ) : (
                             <h2 class={style.headerCell} key={header}>
@@ -49,7 +58,18 @@ const ExplainerTableView = component$<ExplainerTableViewProps>(
                                             contentEditable="true"
                                             placeholder="Type content"
                                             class={style.cellInput}
-                                        />
+                                            onInput$={(ev) => {
+                                                onCellEdited$?.(
+                                                    (
+                                                        ev.target as HTMLSpanElement
+                                                    ).textContent ?? "",
+                                                    index,
+                                                    cellIndex
+                                                );
+                                            }}
+                                        >
+                                            {cell}
+                                        </span>
                                     </div>
                                 ) : (
                                     <p

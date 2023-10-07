@@ -163,11 +163,12 @@ export default component$(() => {
                 }
             }
 
-            console.log(newTable)
+            console.log(newTable);
 
             explainerBlocks.value = explainerBlocks.value.map((block) => {
                 if (block.id === blockId) {
-                    return { id:getRandomInt(), content: newTable };
+                    // Force re-render since the key of the block cell is the id
+                    return { id: getRandomInt(), content: newTable };
                 } else {
                     return block;
                 }
@@ -192,7 +193,8 @@ export default component$(() => {
 
         explainerBlocks.value = explainerBlocks.value.map((block) => {
             if (block.id === blockId) {
-                return { id:getRandomInt(), content: newTable };
+                // Force re-render since the key of the block cell is the id
+                return { id: getRandomInt(), content: newTable };
             } else {
                 return block;
             }
@@ -214,7 +216,8 @@ export default component$(() => {
 
         explainerBlocks.value = explainerBlocks.value.map((block) => {
             if (block.id === blockId) {
-                return { id:getRandomInt(), content: newTable };
+                // Force re-render since the key of the block cell is the id
+                return { id: getRandomInt(), content: newTable };
             } else {
                 return block;
             }
@@ -245,6 +248,57 @@ export default component$(() => {
         });
         explainerBlocks.value = newBlocks;
     });
+
+    const onHeaderEdited = $(
+        (value: string, blockId: number, index: number) => {
+            const table = explainerBlocks.value.find(
+                (block) => block.id === blockId
+            )?.content as ExplainerTable | undefined;
+
+            if (table === undefined) {
+                return;
+            }
+
+            const newTable: ExplainerTable = { ...table };
+            newTable.headers[index] = value;
+
+            explainerBlocks.value = explainerBlocks.value.map((block) => {
+                if (block.id === blockId) {
+                    return { ...block, content: newTable };
+                } else {
+                    return block;
+                }
+            });
+        }
+    );
+
+    const onCellEdited = $(
+        (
+            value: string,
+            blockId: number,
+            rowIndex: number,
+            cellIndex: number
+        ) => {
+            const table = explainerBlocks.value.find(
+                (block) => block.id === blockId
+            )?.content as ExplainerTable | undefined;
+
+            if (table === undefined) {
+                return;
+            }
+
+            const newTable: ExplainerTable = { ...table };
+            newTable.rows[rowIndex][cellIndex] = value;
+
+            explainerBlocks.value = explainerBlocks.value.map((block) => {
+                if (block.id === blockId) {
+                    return { ...block, content: newTable };
+                } else {
+                    return block;
+                }
+            });
+        }
+    );
 
     return (
         <div class={styles.main}>
@@ -354,6 +408,25 @@ export default component$(() => {
                                         <ExplainerTableView
                                             isEditing
                                             table={block.content}
+                                            onHeaderEdited$={(value, index) =>
+                                                onHeaderEdited(
+                                                    value,
+                                                    block.id,
+                                                    index
+                                                )
+                                            }
+                                            onCellEdited$={(
+                                                value,
+                                                rowIndex,
+                                                cellIndex
+                                            ) =>
+                                                onCellEdited(
+                                                    value,
+                                                    block.id,
+                                                    rowIndex,
+                                                    cellIndex
+                                                )
+                                            }
                                         />
                                     </div>
 
