@@ -63,8 +63,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 100%;
+  height: 80vh;
   flex: 2;
+  overflow-y: scroll;
 }
 
 .input{
@@ -92,9 +93,16 @@
 }
 
 .delete{
-  background-color: var(--warning-text);
+  background-color: var(--warning-text)!important;
+  color: var(--primary-text)!important;
+  border: none;
+}
+
+.deleteRow{
+  background-color: var(--warning-text)!important;
   color: var(--primary-text);;
   border: none;
+  width: fit-content!important;
 }
 
 .buttonBar{
@@ -113,4 +121,18 @@
   border-color: var(--separator);
   font-size: 18px;
   color:var(--accent-text);
+  flex-shrink: 0;
+}
+
+.inputLabel{
+  font-size: 18px;
+  color: var(--primary-text);
+  margin: 2px;
+}
+
+.tableContainer{
+  width: 100%;
+  padding-right: 32px;
+  box-sizing: border-box;
+  z-index:1;
 }

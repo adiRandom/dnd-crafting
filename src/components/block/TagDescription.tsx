@@ -5,6 +5,7 @@ import { TagModel } from "~/models/tags";
 type Props = {
     tag: TagModel;
 };
+
 const TagDescription = component$((props: Props) => {
     return (
         <div class={styles.container}>

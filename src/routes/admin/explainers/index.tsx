@@ -16,6 +16,8 @@ import {
     explainerStageName,
     isToolExplainer,
 } from "~/models/explainer";
+import { ExplainerTable } from "~/models/explainerTable";
+import ExplainerTableView from "~/components/table/ExplainerTableView";
 
 export const useExplainers = routeLoader$(() => getExplainers());
 export const useTools = routeLoader$(() => getTools());
@@ -31,6 +33,9 @@ export default component$(() => {
     const explainerDescription = useSignal("");
     const explainerStage = useSignal(ExplainerStage.Tool);
     const explainerTool = useSignal<Tool | undefined>(tools.value[0]);
+
+    const explainerTable = useSignal<ExplainerTable | undefined>(undefined);
+    const explainerTableColumn = useSignal<number>(0);
 
     const onSubmit = $(async () => {
         let result = null as Explainer | null;
@@ -95,7 +100,6 @@ export default component$(() => {
     });
 
     const onCellClick = $(async (explainer: Explainer) => {
-
         if (selectedExplainer.value?.id === explainer.id) {
             selectedExplainer.value = null;
 
@@ -106,7 +110,6 @@ export default component$(() => {
             return;
         }
 
-
         selectedExplainer.value = explainer;
         explainerTtitle.value = explainer.title;
         explainerDescription.value = explainer.text;
@@ -114,6 +117,75 @@ export default component$(() => {
         explainerTool.value = isToolExplainer(explainer)
             ? tools.value.find((tool) => tool.id === explainer.toolId)
             : undefined;
+    });
+
+    const onTableColumnCountChange = $(async (count: string) => {
+        const countNumber = Number.parseInt(count);
+
+        if (Number.isNaN(countNumber) || countNumber < 0) {
+            return;
+        }
+
+        explainerTableColumn.value = countNumber;
+
+        const currentColumns = explainerTable.value?.headers.length ?? 0;
+        const diff = countNumber - currentColumns;
+
+        if (diff === 0) {
+            return;
+        }
+
+        const newTable: ExplainerTable = {
+            headers: [],
+            rows: [],
+        };
+
+        if (explainerTable.value !== undefined) {
+            newTable.headers = explainerTable.value.headers;
+            newTable.rows = explainerTable.value.rows;
+        }
+
+        if (diff > 0) {
+            for (let i = 0; i < diff; i++) {
+                newTable.headers.push("");
+                newTable.rows.forEach((row) => {
+                    row.push("");
+                });
+            }
+        } else {
+            for (let i = 0; i < -diff; i++) {
+                newTable.headers.pop();
+                newTable.rows.forEach((row) => {
+                    row.pop();
+                });
+            }
+        }
+
+        explainerTable.value = newTable;
+    });
+
+    const addRow = $(async () => {
+        if (explainerTable.value === undefined) {
+            return;
+        }
+        const newTable: ExplainerTable = { ...explainerTable.value };
+
+        const newRow: string[] = [];
+        newTable.headers.forEach(() => newRow.push(""));
+        newTable.rows.push(newRow);
+
+        explainerTable.value = newTable;
+    });
+
+    const removeRow = $(async () => {
+        if (explainerTable.value === undefined) {
+            return;
+        }
+        const newTable: ExplainerTable = { ...explainerTable.value };
+
+        newTable.rows.pop();
+
+        explainerTable.value = newTable;
     });
 
     return (
@@ -191,6 +263,33 @@ export default component$(() => {
                                 </option>
                             ))}
                         </select>
+                    )}
+
+                    <p class={styles.inputLabel}>Table column number</p>
+                    <input
+                        class={styles.input}
+                        type="text"
+                        value={explainerTableColumn.value}
+                        onChange$={(ev) =>
+                            onTableColumnCountChange(ev.target.value)
+                        }
+                    />
+    
+                    {explainerTable.value && (
+                        <div class={styles.tableContainer}>
+                            <ExplainerTableView table={explainerTable.value} />
+                        </div>
+                    )}
+
+                    {explainerTableColumn.value > 0 && (
+                        <div class={styles.buttonBar}>
+                            <PrimaryButton onClick$={addRow} label="Add Row" />
+                            <PrimaryButton
+                                class={[styles.deleteRow]}
+                                onClick$={removeRow}
+                                label="Remove row"
+                            />
+                        </div>
                     )}
 
                     <div class={styles.buttonBar}>

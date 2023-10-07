@@ -1,8 +1,11 @@
+import { ExplainerTable } from "./explainerTable";
+
 export type Explainer = {
   id: number;
   title: string;
   text: string;
   toolId: number;
+  table?: ExplainerTable;
   stage: ExplainerStage
 }
   | {

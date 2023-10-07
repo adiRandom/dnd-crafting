@@ -10,6 +10,7 @@ import { useCssClassNameAnimation } from "~/hooks/useCssClassNameAnimation";
 import type { ModalModel } from "~/models/ModalModel";
 import { useDebouncedSignal } from "~/hooks/useDebouncedSignal";
 import { PrimaryButton } from "../ui/buttons/primaryButton";
+import ExplainerTableView from "../table/ExplainerTableView";
 
 export type ModalContext = {
     openModal$: PropFunction<(model: ModalModel) => void>;
@@ -60,6 +61,11 @@ const Modal = component$(
                                 >
                                     {}
                                 </p>
+                                {model.explainerTable && (
+                                    <ExplainerTableView
+                                        table={model.explainerTable}
+                                    />
+                                )}
                             </div>
                             <PrimaryButton
                                 label={model.button}

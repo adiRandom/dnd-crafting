@@ -1,0 +1,49 @@
+.tableRoot {
+    border: 2px solid var(--separator);
+    width: 100%;
+    background-color: var(--purple-container-bg);
+}
+
+.headerContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 10vh;
+}
+
+.headerCell {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-text);
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    border: 2px solid var(--separator);
+}
+
+.bodyContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 10vh;
+}
+
+.cell {
+    font-size: 1.5rem;
+    color: var(--primary-text);
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    border: 1px solid var(--separator);
+    margin: 0;
+}
