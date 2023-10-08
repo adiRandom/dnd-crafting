@@ -307,6 +307,12 @@ export default component$(() => {
         }
     );
 
+    const deleteBlock = $((blockId: number) => {
+        explainerBlocks.value = explainerBlocks.value.filter(
+            (block) => block.id !== blockId
+        );
+    });
+
     return (
         <div class={styles.main}>
             <h1>Explainers</h1>
@@ -391,6 +397,11 @@ export default component$(() => {
                                             )
                                         }
                                     />
+                                    <PrimaryButton
+                                        class={[styles.deleteRow]}
+                                        onClick$={() => deleteBlock(block.id)}
+                                        label="Delete Block"
+                                    />
                                 </div>
                             );
                         } else {
@@ -451,6 +462,13 @@ export default component$(() => {
                                                     removeRow(block.id)
                                                 }
                                                 label="Remove row"
+                                            />
+                                            <PrimaryButton
+                                                class={[styles.deleteRow]}
+                                                onClick$={() =>
+                                                    deleteBlock(block.id)
+                                                }
+                                                label="Delete Block"
                                             />
                                         </div>
                                     )}
