@@ -1,6 +1,7 @@
 import { server$ } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
 import { type Explainer, ExplainerStage, isToolExplainer } from "~/models/explainer";
+import { EXPLAINER_TYPE_TABLE, EXPLAINER_TYPE_TEXT, ExplainerBlock } from "~/models/explianerBlock";
 import { ImageModel } from "~/models/imageModel";
 import type { ItemTierInfo } from "~/models/itemTierInfo";
 import type { Rarity } from "~/models/rarity";
@@ -115,7 +116,7 @@ export const getAllTags = server$(async () => {
 
 });
 
-export const getIconUrl = server$(async( formTagId: number, rarityIndex: number): Promise<string> => {
+export const getIconUrl = server$(async (formTagId: number, rarityIndex: number): Promise<string> => {
   const prisma = getPrisma();
 
   const imageModel = await prisma.images.findFirst({
@@ -131,7 +132,11 @@ export const getIconUrl = server$(async( formTagId: number, rarityIndex: number)
 export const getExplainers = server$(async () => {
   const prisma = getPrisma();
 
-  const explainers = await prisma.explainers.findMany();
+  const explainers = await prisma.explainers.findMany({
+    include: {
+      explainer_blocks: true
+    }
+  });
 
   return explainers.map(explainer => {
     if (explainer.dependency_type === "TOOL") {
@@ -140,14 +145,22 @@ export const getExplainers = server$(async () => {
         title: explainer.title,
         text: explainer.text,
         toolId: explainer.dependency ?? 0,
-        stage: explainer.stage
+        stage: explainer.stage,
+        blocks: explainer.explainer_blocks.map(block => ({
+          id: block.id,
+          content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+        } as ExplainerBlock))
       } as Explainer;
     } else {
       return {
         id: explainer.id,
         title: explainer.title,
         text: explainer.text,
-        stage: explainer.stage
+        stage: explainer.stage,
+        blocks: explainer.explainer_blocks.map(block => ({
+          id: block.id,
+          content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+        } as ExplainerBlock))
       } as Explainer;
     }
   });
@@ -160,7 +173,7 @@ export const getExplainerForTierStage = server$(async (toolId: number) => {
     where: {
       dependency_type: "TOOL",
       dependency: toolId,
-      stage: ExplainerStage.Tier
+      stage: ExplainerStage.Tier,
     }
   });
 
@@ -277,6 +290,22 @@ export const updateExplainer = server$<(explainer: Explainer) => Promise<Explain
   async (explainer: Explainer) => {
     const prisma = getPrisma();
 
+    // Update the explainer blocks
+
+    await prisma.explainer_blocks.deleteMany({
+      where: {
+        explainer_id: explainer.id
+      }
+    });
+
+    await Promise.all(explainer.blocks.map(block => prisma.explainer_blocks.create({
+      data: {
+        id: block.id,
+        type: typeof block.content === "string" ? EXPLAINER_TYPE_TEXT : EXPLAINER_TYPE_TABLE,
+        content: typeof block.content === "string" ? block.content : JSON.stringify(block.content),
+        explainer_id: explainer.id
+      }
+    })));
 
     const updatedExplainer = await prisma.explainers.update({
       where: {
@@ -287,7 +316,7 @@ export const updateExplainer = server$<(explainer: Explainer) => Promise<Explain
         text: explainer.text,
         dependency: isToolExplainer(explainer) ? explainer.toolId : null,
         stage: explainer.stage,
-        dependency_type: isToolExplainer(explainer) ? "TOOL" : undefined
+        dependency_type: isToolExplainer(explainer) ? "TOOL" : undefined,
       }
     });
 
@@ -297,14 +326,16 @@ export const updateExplainer = server$<(explainer: Explainer) => Promise<Explain
         title: updatedExplainer.title,
         text: updatedExplainer.text,
         toolId: updatedExplainer.dependency,
-        stage: updatedExplainer.stage
+        stage: updatedExplainer.stage,
+        blocks: explainer.blocks
       };
     } else {
       return {
         id: updatedExplainer.id,
         title: updatedExplainer.title,
         text: updatedExplainer.text,
-        stage: updatedExplainer.stage
+        stage: updatedExplainer.stage,
+        blocks: explainer.blocks
       };
     }
   }
@@ -320,7 +351,14 @@ export const createExplainer = server$<(explainer: Explainer) => Promise<Explain
         text: explainer.text,
         dependency: isToolExplainer(explainer) ? explainer.toolId : null,
         stage: explainer.stage,
-        dependency_type: isToolExplainer(explainer) ? "TOOL" : undefined
+        dependency_type: isToolExplainer(explainer) ? "TOOL" : undefined,
+        explainer_blocks: {
+          create: explainer.blocks.map(block => ({
+            id: block.id,
+            type: typeof block.content === "string" ? EXPLAINER_TYPE_TEXT : EXPLAINER_TYPE_TABLE,
+            content: typeof block.content === "string" ? block.content : JSON.stringify(block.content)
+          }))
+        }
       }
     });
 
@@ -330,14 +368,16 @@ export const createExplainer = server$<(explainer: Explainer) => Promise<Explain
         title: createdExplainer.title,
         text: createdExplainer.text,
         toolId: createdExplainer.dependency,
-        stage: createdExplainer.stage
+        stage: createdExplainer.stage,
+        blocks: explainer.blocks
       };
     } else {
       return {
         id: createdExplainer.id,
         title: createdExplainer.title,
         text: createdExplainer.text,
-        stage: createdExplainer.stage
+        stage: createdExplainer.stage,
+        blocks: explainer.blocks
       };
     }
   });

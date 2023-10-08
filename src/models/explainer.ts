@@ -1,4 +1,5 @@
 import { ExplainerTable } from "./explainerTable";
+import { ExplainerBlock } from "./explianerBlock";
 
 export type Explainer = {
   id: number;
@@ -9,14 +10,15 @@ export type Explainer = {
   text: string;
   toolId: number;
   table?: ExplainerTable;
-  blocks: (ExplainerTable | string)[];
+  blocks: ExplainerBlock[];
   stage: ExplainerStage
 }
   | {
     id: number;
     title: string;
     text: string;
-    stage: ExplainerStage
+    stage: ExplainerStage,
+  blocks: ExplainerBlock[];
   }
 
 
