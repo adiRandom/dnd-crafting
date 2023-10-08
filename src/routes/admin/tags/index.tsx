@@ -17,6 +17,7 @@ import {
     doesTagTakeAllSlots,
 } from "~/models/tags";
 import { Rarity } from "~/models/rarity";
+import TagDependencies from "~/components/tagDependencies/TagDependencies";
 
 export const useTools = routeLoader$(() => getTools());
 export const useTags = routeLoader$(() => getAllTags());
@@ -97,7 +98,7 @@ export default component$(() => {
                 tag.id === result?.id ? result! : tag
             );
 
-            console.log(tags.value)
+            console.log(tags.value);
         } else {
             const result = await createTag({
                 id: 0,
@@ -284,50 +285,27 @@ export default component$(() => {
                             </>
                         )}
                         {availableFormTagsDependencies.value.length != 0 && (
-                            <>
-                                <h3 class={styles.inputLabel}>
-                                    Form Tag Requirements
-                                </h3>
-                                <div class={styles.formTagRequirements}>
-                                    {availableFormTagsDependencies.value.map(
-                                        (tag) => (
-                                            <div
-                                                key={tag.id}
-                                                class={{
-                                                    [styles.formTagRequirement]:
-                                                        true,
-                                                    [styles.selectedFormTagRequirement]:
-                                                        formTagRequirements.value.includes(
-                                                            tag.id
-                                                        ),
-                                                }}
-                                                onClick$={() => {
-                                                    if (
-                                                        formTagRequirements.value.includes(
-                                                            tag.id
-                                                        )
-                                                    ) {
-                                                        formTagRequirements.value =
-                                                            formTagRequirements.value.filter(
-                                                                (id) =>
-                                                                    id !==
-                                                                    tag.id
-                                                            );
-                                                    } else {
-                                                        formTagRequirements.value =
-                                                            [
-                                                                ...formTagRequirements.value,
-                                                                tag.id,
-                                                            ];
-                                                    }
-                                                }}
-                                            >
-                                                {tag.name}
-                                            </div>
+                            <TagDependencies
+                                availableTags={availableFormTagsDependencies}
+                                selectedTags={formTagRequirements}
+                                onClick$={(tagId) => {
+                                    if (
+                                        formTagRequirements.value.includes(
+                                            tagId
                                         )
-                                    )}
-                                </div>
-                            </>
+                                    ) {
+                                        formTagRequirements.value =
+                                            formTagRequirements.value.filter(
+                                                (id) => id !== tagId
+                                            );
+                                    } else {
+                                        formTagRequirements.value = [
+                                            ...formTagRequirements.value,
+                                            tagId,
+                                        ];
+                                    }
+                                }}
+                            />
                         )}
                     </div>
                     <div class={styles.buttonBar}>
