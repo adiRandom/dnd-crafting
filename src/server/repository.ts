@@ -19,7 +19,6 @@ function getPrisma() {
   return prisma;
 }
 
-
 export const getTierInfo = server$(async () => {
 
   const prisma = getPrisma();
@@ -288,6 +287,7 @@ export const deleteTool = server$<(toolId: number) => Promise<void>>(async (tool
 
 export const updateExplainer = server$<(explainer: Explainer) => Promise<Explainer>>(
   async (explainer: Explainer) => {
+    console.log(explainer)
     const prisma = getPrisma();
 
     // Update the explainer blocks
@@ -298,14 +298,18 @@ export const updateExplainer = server$<(explainer: Explainer) => Promise<Explain
       }
     });
 
-    await Promise.all(explainer.blocks.map(block => prisma.explainer_blocks.create({
+    console.log(explainer.blocks)
+
+    const createdBlocks = await Promise.all(explainer.blocks.map(block => prisma.explainer_blocks.create({
       data: {
-        id: block.id,
+        // id: block.id,
         type: typeof block.content === "string" ? EXPLAINER_TYPE_TEXT : EXPLAINER_TYPE_TABLE,
         content: typeof block.content === "string" ? block.content : JSON.stringify(block.content),
         explainer_id: explainer.id
       }
     })));
+
+    console.log("Here")
 
     const updatedExplainer = await prisma.explainers.update({
       where: {
@@ -320,6 +324,8 @@ export const updateExplainer = server$<(explainer: Explainer) => Promise<Explain
       }
     });
 
+    console.log(updatedExplainer)
+
     if (updatedExplainer.dependency_type === "TOOL" && updatedExplainer.dependency) {
       return {
         id: updatedExplainer.id,
@@ -327,7 +333,10 @@ export const updateExplainer = server$<(explainer: Explainer) => Promise<Explain
         text: updatedExplainer.text,
         toolId: updatedExplainer.dependency,
         stage: updatedExplainer.stage,
-        blocks: explainer.blocks
+        blocks: createdBlocks.map(block => ({
+          id: block.id,
+          content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+        }))
       };
     } else {
       return {
@@ -335,7 +344,10 @@ export const updateExplainer = server$<(explainer: Explainer) => Promise<Explain
         title: updatedExplainer.title,
         text: updatedExplainer.text,
         stage: updatedExplainer.stage,
-        blocks: explainer.blocks
+        blocks: createdBlocks.map(block => ({
+          id: block.id,
+          content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+        }))
       };
     }
   }

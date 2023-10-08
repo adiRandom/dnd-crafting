@@ -2,15 +2,15 @@ import type { PropFunction } from "@builder.io/qwik";
 import {
     component$,
     createContextId,
-    useStylesScoped$,
     useComputed$,
 } from "@builder.io/qwik";
-import styles from "./style.css?inline";
+import styles from "./style.module.css";
 import { useCssClassNameAnimation } from "~/hooks/useCssClassNameAnimation";
 import type { ModalModel } from "~/models/ModalModel";
 import { useDebouncedSignal } from "~/hooks/useDebouncedSignal";
 import { PrimaryButton } from "../ui/buttons/primaryButton";
 import ExplainerTableView from "../table/ExplainerTableView";
+import { ExplainerTable } from "~/models/explainerTable";
 
 export type ModalContext = {
     openModal$: PropFunction<(model: ModalModel) => void>;
@@ -26,8 +26,6 @@ const Modal = component$(
         model: ModalModel | null;
         close$: PropFunction<() => void>;
     }) => {
-        useStylesScoped$(styles);
-
         const isEnteringAnimation = useComputed$(() => !!model);
         const isEnteringAnimationDelayed = useDebouncedSignal(
             isEnteringAnimation,
@@ -50,22 +48,32 @@ const Modal = component$(
         return (
             <>
                 {model && (
-                    <div id="backdrop" class={backdropClassName.value}>
-                        <div id="modal" class={modalClass.value}>
-                            <h1>{model.title}</h1>
-                            <div id="content">
-                                <p
-                                    dangerouslySetInnerHTML={(
-                                        window as any
-                                    )?.marked.parse(model.content)}
-                                >
-                                    {}
-                                </p>
-                                {model.explainerTable && (
-                                    <ExplainerTableView
-                                        table={model.explainerTable}
-                                    />
-                                )}
+                    <div class={[backdropClassName.value, styles.backdrop]}>
+                        <div class={[modalClass.value, styles.modal]}>
+                            <h1 class={styles.heading}>{model.title}</h1>
+                            <div class={styles.content}>
+                                {model.blocks.map((block) => (
+                                    <div class={styles.block} key={block.id}>
+                                        {typeof block.content === "string" ? (
+                                            <p
+                                                class={styles.textBlock}
+                                                dangerouslySetInnerHTML={(
+                                                    window as any
+                                                )?.marked.parse(block.content)}
+                                            >
+                                                {}
+                                            </p>
+                                        ) : (
+                                            <div class={styles.tableBlock}>
+                                                <ExplainerTableView
+                                                    table={
+                                                        block.content as ExplainerTable
+                                                    }
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                             <PrimaryButton
                                 label={model.button}

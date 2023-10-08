@@ -48,6 +48,7 @@ export default component$(() => {
                     text: explainerDescription.value,
                     toolId: explainerTool.value?.id,
                     stage: explainerStage.value,
+                    blocks: explainerBlocks.value,
                 } as Explainer);
             } else {
                 result = await updateExplainer({
@@ -55,6 +56,7 @@ export default component$(() => {
                     title: explainerTtitle.value,
                     text: explainerDescription.value,
                     stage: explainerStage.value,
+                    blocks: explainerBlocks.value,
                 } as Explainer);
             }
 
@@ -68,6 +70,7 @@ export default component$(() => {
                     text: explainerDescription.value,
                     toolId: explainerTool.value?.id,
                     stage: explainerStage.value,
+                    blocks: explainerBlocks.value,
                     id: 0,
                 } as Explainer);
             } else {
@@ -75,6 +78,7 @@ export default component$(() => {
                     title: explainerTtitle.value,
                     text: explainerDescription.value,
                     stage: explainerStage.value,
+                    blocks: explainerBlocks.value,
                     id: 0,
                 } as Explainer);
             }
@@ -98,6 +102,7 @@ export default component$(() => {
 
         explainerTtitle.value = "";
         explainerDescription.value = "";
+        explainerBlocks.value = [];
     });
 
     const onCellClick = $(async (explainer: Explainer) => {
@@ -108,6 +113,7 @@ export default component$(() => {
             explainerDescription.value = "";
             explainerStage.value = ExplainerStage.Tool;
             explainerTool.value = tools.value[0];
+            explainerBlocks.value = [];
             return;
         }
 
@@ -115,6 +121,7 @@ export default component$(() => {
         explainerTtitle.value = explainer.title;
         explainerDescription.value = explainer.text;
         explainerStage.value = explainer.stage;
+        explainerBlocks.value = explainer.blocks;
         explainerTool.value = isToolExplainer(explainer)
             ? tools.value.find((tool) => tool.id === explainer.toolId)
             : undefined;

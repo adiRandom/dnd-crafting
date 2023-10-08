@@ -1,4 +1,4 @@
-#backdrop {
+.backdrop {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,11 +11,11 @@
     align-items: center;
 }
 
-#modal {
+.modal {
     background-color: var(--purple-container-bg);
     border-radius: 8px;
     padding: 20px;
-    width: 40%;
+    width: 60%;
     min-height: 30%;
     max-height: 90%;
     z-index: 100;
@@ -25,26 +25,26 @@
     -webkit-backdrop-filter: blur(8px);
 }
 
-#modal h1 {
+.heading {
     font-size: 3rem;
     margin-bottom: 20px;
     color: var(--primary-text);
 }
 
-#modal p {
+.textBlock {
     font-size: 1.5rem;
     color: white;
     color: var(--primary-text);
     white-space: pre-line;
 }
 
-#modal #content {
+.content {
     width: 100%;
     overflow-y: auto;
     margin-bottom: 20px;
 }
 
-#modal #action {
+.action {
     width: 128px;
     display: flex;
     justify-content: center;
@@ -82,4 +82,15 @@
 
 .modal-entered {
     transform: translateY(0);
+}
+
+
+.block{
+    margin-bottom: 8px;
+}
+
+.tableBlock{
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 16px;
 }

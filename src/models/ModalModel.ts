@@ -1,8 +1,7 @@
-import { ExplainerTable } from "./explainerTable";
+import { ExplainerBlock } from "./explianerBlock";
 
 export type ModalModel = {
   title: string;
-  content: string;
+  blocks: ExplainerBlock[]
   button: string;
-  explainerTable?: ExplainerTable
 };

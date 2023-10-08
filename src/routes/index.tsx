@@ -15,25 +15,33 @@ export const useExplainerModal = routeLoader$(async () => {
     return craftingRulesExplainer
         ? ({
               title: craftingRulesExplainer.title,
-              content: craftingRulesExplainer.text,
+              blocks: craftingRulesExplainer.blocks,
               button: "Start Crafting",
           } as ModalModel)
         : {
               title: "Crafting Rules",
-              content:
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+              blocks: [
+                  {
+                      id: 0,
+                      content:
+                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+                  },
+              ],
               button: "Start Crafting",
           };
 });
 
 export const useToolButtons = routeLoader$(async () => {
-	const tools = await getTools();
-	return tools.map((tool) => ({
-		icon: tool.emoji,
-		label: tool.name,
-		href: `/tool/${tool.id}`,
-	} as ButtonOptions));
-})
+    const tools = await getTools();
+    return tools.map(
+        (tool) =>
+            ({
+                icon: tool.emoji,
+                label: tool.name,
+                href: `/tool/${tool.id}`,
+            } as ButtonOptions)
+    );
+});
 
 export default component$(() => {
     const modalModel = useExplainerModal();
