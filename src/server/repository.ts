@@ -68,6 +68,10 @@ export const getTags = server$(async (toolId: number) => {
   const tags = await prisma.tags.findMany({
     where: {
       tool_id: toolId
+    },
+    include: {
+      mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_first_tagTotags: true,
+      mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags: true
     }
   });
 
@@ -85,7 +89,14 @@ export const getTags = server$(async (toolId: number) => {
         }
       })).map(tagDep => tagDep.form_tag_id),
       description: tag.description,
-      itemName: tag.item_name
+      itemName: tag.item_name,
+      mutuallyExclusiveTagId: [
+        ...tag.mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_first_tagTotags
+          .map(({ second_tag }) =>
+            second_tag
+          ), ...tag.mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags
+            .map(({ first_tag }) =>
+              first_tag)]
     } as TagModel;
   }));
 });

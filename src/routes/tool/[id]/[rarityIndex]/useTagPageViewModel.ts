@@ -130,6 +130,32 @@ export function useTagPageViewModel() {
       })
     }
 
+    const mutuallyExclusiveSelectedTags = tag.mutuallyExclusiveTagId.filter(tagId => {
+      return selectedEffectTagIds.value[tagId]
+    })
+
+    if (mutuallyExclusiveSelectedTags.length > 0) {
+      const mutuallyExclusiveTagsAsString = mutuallyExclusiveSelectedTags.reduce(
+        (acc, tagId) =>
+          acc +
+          (tags.value.effectTags.find(
+            (effectTag) => effectTag.id === tagId
+          )?.name ?? "??") +
+          " / ",
+        ""
+      );
+
+      const trimmedMutuallyExclusiveTags = mutuallyExclusiveTagsAsString.substring(
+        0,
+        mutuallyExclusiveTagsAsString.length - 3
+      );
+
+      status.push({
+        availability: TagAvailability.MutuallyExclusiveEffects,
+        reason: `${TagAvailability.MutuallyExclusiveEffects}: ${trimmedMutuallyExclusiveTags}`
+      })
+    }
+
 
     return status.length > 0
       ? status
