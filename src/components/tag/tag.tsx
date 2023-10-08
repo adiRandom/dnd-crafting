@@ -1,4 +1,4 @@
-import { PropFunction, component$, useSignal, $ } from "@builder.io/qwik";
+import { PropFunction, component$, useSignal, $, useComputed$ } from "@builder.io/qwik";
 import type { TagModel } from "~/models/tags";
 import styles from "./tag.module.css";
 import TagBackground from "./tagBackground";
@@ -31,6 +31,18 @@ const Tag = component$(
             onHover$(false);
         });
 
+        const fillColor = useComputed$(() => {
+            if(isHovering.value && isSelected) {
+                return "rgba(0, 0, 0, 0)";
+            }
+            
+            if(isHovering.value || isSelected) {
+                return PRIMARY_HOVER;
+            }
+
+            return "rgba(0, 0, 0, 0)";
+        })
+
         return (
             <div
                 class={styles.tagContainer}
@@ -40,11 +52,7 @@ const Tag = component$(
                 <TagBackground
                     class={styles.tagBg}
                     color={canBeSelected ? PRIMARY_BORDER : DISABLED_BORDER}
-                    fillColor={
-                        isHovering.value || isSelected
-                            ? PRIMARY_HOVER
-                            : "rgba(0, 0, 0, 0)"
-                    }
+                    fillColor={fillColor.value}
                 />
                 <h1
                     class={{

@@ -23,21 +23,28 @@ export const useExplainModal = routeLoader$(async (ev) => {
     return explainer
         ? ({
               title: explainer.title,
-              content: explainer.text,
+              blocks: explainer.explainer_blocks.map((block) => ({
+                  id: block.id,
+                  content: block.content,
+              })),
               button: "Continue Crafting",
           } as ModalModel)
         : ({
               title: `Tool Rules`,
-              content:
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+              blocks: [
+                  {
+                      id: 0,
+                      content:
+                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+                  },
+              ],
               button: "Continue Crafting",
           } as ModalModel);
 });
 
 export const useItemTiers = routeLoader$(async () => {
     return await getTierInfo();
- })
-
+});
 
 export default component$(() => {
     const tool = useTool();
@@ -47,7 +54,6 @@ export default component$(() => {
     const modalModel = useExplainModal();
 
     useIntroModal(modalModel.value);
-
 
     return (
         <div class={styles.main}>

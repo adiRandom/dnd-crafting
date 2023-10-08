@@ -173,6 +173,9 @@ export const getExplainerForTierStage = server$(async (toolId: number) => {
       dependency_type: "TOOL",
       dependency: toolId,
       stage: ExplainerStage.Tier,
+    },
+    include: {
+      explainer_blocks:true
     }
   });
 
@@ -185,6 +188,9 @@ export const getExplainerForTagStage = server$(async () => {
   const explainer = await prisma.explainers.findFirst({
     where: {
       stage: ExplainerStage.Tags
+    },
+    include: {
+      explainer_blocks:true
     }
   });
 

@@ -118,7 +118,7 @@
 .selectedTagContainerWithContent {
     transform: scale(1) !important;
     opacity: 1 !important;
-    height: 96px;
+    height: 96px;;
 }
 
 .missing {
@@ -160,4 +160,16 @@
 
 .loading{
     color:var(--accent-text)
+}
+
+.backButton{
+    position: relative;
+    left:-100%;
+    font-size: 2rem;
+    color: var(--primary-text);
+    cursor: pointer;
+}
+
+.backButton:hover{
+    color: var(--accent-text);
 }

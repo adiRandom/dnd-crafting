@@ -176,12 +176,18 @@ export function useTagPageViewModel() {
     }
 
     selectedFormTag.value = tag;
+
+    if (remainingSlots.value === undefined) {
+      return
+    }
+
     if (
       !doesTagTakeAllSlots(tag.slotCost)
-      && remainingSlots.value !== undefined
     ) {
       remainingSlots.value =
         remainingSlots.value - tag.slotCost.value;
+    } else {
+      remainingSlots.value = 0;
     }
   })
 
@@ -226,6 +232,12 @@ export function useTagPageViewModel() {
     }
   })
 
+  const onClearFormTagClick = $(() => {
+    selectedFormTag.value = null;
+    remainingSlots.value = tierInfo.value?.tags;
+  })
+
+
   const onContinueClick = $(() => {
     showItemCard.value = true;
   })
@@ -236,7 +248,7 @@ export function useTagPageViewModel() {
     // Open a new window with the image
 
     html2canvas(document.getElementById("item-card") as HTMLElement,
-      { allowTaint: true , useCORS: true}
+      { allowTaint: true, useCORS: true }
     ).then(canvas => {
       const dataURL = canvas.toDataURL("image/png");
       const newWindow = window.open();
@@ -261,7 +273,8 @@ export function useTagPageViewModel() {
     showItemCard,
     iconUrl,
     onContinueClick,
-    print
+    print,
+    onClearFormTagClick
   }
 }
 

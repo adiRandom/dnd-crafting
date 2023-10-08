@@ -18,7 +18,6 @@ import { ICON } from "~/theme/color";
 import { useTagPageViewModel } from "./useTagPageViewModel";
 import styles from "./styles.module.css";
 
-
 export const useTags = routeLoader$(async (ev) => {
     const toolId = ev.params.id;
     const tags = await getTags(parseInt(toolId));
@@ -44,13 +43,21 @@ export const useExplainModal = routeLoader$(async () => {
     return explainer
         ? ({
               title: explainer.title,
-              content: explainer.text,
+              blocks: explainer.explainer_blocks.map((block) => ({
+                  id: block.id,
+                  content: block.content,
+              })),
               button: "Add Tags",
           } as ModalModel)
         : ({
               title: `Tag Rules`,
-              content:
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+              blocks: [
+                  {
+                      id: 0,
+                      content:
+                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, quis ultricies nisl nunc eget nisl. Nulla facilisi. Nulla facilisi. \n\n",
+                  },
+              ],
               button: "Add Tags",
           } as ModalModel);
 });
@@ -72,6 +79,7 @@ export default component$(() => {
         iconUrl,
         onContinueClick,
         print,
+        onClearFormTagClick,
     } = useTagPageViewModel();
 
     const explainer = useExplainModal();
@@ -117,14 +125,17 @@ export default component$(() => {
                     [styles.selectedTagContainerWithContent]:
                         selectedFormTag.value !== null,
                 }}
+                onClick$={onClearFormTagClick}
             >
                 {selectedFormTag.value && (
-                    <Tag
-                        tag={selectedFormTag.value}
-                        canBeSelected
-                        isSelected={true}
-                        onHover$={() => {}}
-                    ></Tag>
+                    <>
+                        <Tag
+                            tag={selectedFormTag.value}
+                            canBeSelected
+                            isSelected={true}
+                            onHover$={() => {}}
+                        ></Tag>
+                    </>
                 )}
             </div>
             <div class={styles.content}>
@@ -161,7 +172,9 @@ export default component$(() => {
                             >{`Cost: ${formatedCostInfoTooltip.value}`}</h3>
                             <div
                                 class={styles.description}
-                                dangerouslySetInnerHTML={(window as any)?.marked.parse(
+                                dangerouslySetInnerHTML={(
+                                    window as any
+                                )?.marked.parse(
                                     showInfoForTag.value.description
                                 )}
                             />
