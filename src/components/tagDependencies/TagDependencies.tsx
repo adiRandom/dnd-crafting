@@ -6,13 +6,14 @@ export type TagDependenciesProps = {
     availableTags: Readonly<Signal<TagModel[]>>;
     selectedTags: Readonly<Signal<number[]>>;
     onClick$(tagId: number): void;
+    label: string;
 };
 
 const TagDependencies = component$<TagDependenciesProps>(
-    ({ availableTags, selectedTags, onClick$ }) => {
+    ({ availableTags, selectedTags, onClick$, label }) => {
         return (
             <div>
-                <h3 class={styles.inputLabel}>Form Tag Requirements</h3>
+                <h3 class={styles.inputLabel}>{label}</h3>
                 <div class={styles.formTagRequirements}>
                     {availableTags.value.map((tag) => (
                         <div

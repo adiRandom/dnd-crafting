@@ -11,6 +11,7 @@ export type TagModel = {
   description: string;
   itemName?: string;
   toolId: number;
+  mutuallyExclusiveTagId: number[];
 }
 
 export type TagWithAvailability = TagModel & {

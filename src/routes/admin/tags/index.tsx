@@ -50,6 +50,21 @@ export default component$(() => {
         );
     });
 
+    const availableEffectTagDependencies = useComputed$(() => {
+        if (selectedTool.value === null || tagType.value === TagType.FormTag) {
+            return [];
+        }
+
+        return tags.value.filter(
+            (tag) =>
+                tag.type === TagType.EffectTag &&
+                tag.toolId === selectedTool.value?.id &&
+                tag.id !== selectedTag.value?.id
+        );
+    });
+
+    const mutuallyExclusiveEffectTagIds = useSignal([] as number[]);
+
     const clearForm = $(() => {
         selectedTag.value = null;
 
@@ -61,7 +76,44 @@ export default component$(() => {
         formTagRequirements.value = [];
         itemName.value = "";
         selectedTool.value = null;
+        mutuallyExclusiveEffectTagIds.value = [];
     });
+
+    const updateMutuallyExclusiveAfterSubmit = $(
+        async (mutuallyExclusive: number[], submitedTagId: number) => {
+            console.log("Hello");
+            const newTags = [...tags.value].map((tag) => {
+                console.log(tag);
+                const wasMutuallyExclusive =
+                    tag.mutuallyExclusiveTagId.includes(submitedTagId);
+                const isMutuallyExclusive = mutuallyExclusive.includes(tag.id);
+
+                console.log(wasMutuallyExclusive, isMutuallyExclusive);
+
+                if (wasMutuallyExclusive && !isMutuallyExclusive) {
+                    return {
+                        ...tag,
+                        mutuallyExclusiveTagId:
+                            tag.mutuallyExclusiveTagId.filter(
+                                (id) => id !== submitedTagId
+                            ),
+                    };
+                } else if (!wasMutuallyExclusive && isMutuallyExclusive) {
+                    return {
+                        ...tag,
+                        mutuallyExclusiveTagId: [
+                            ...tag.mutuallyExclusiveTagId,
+                            submitedTagId,
+                        ],
+                    };
+                } else {
+                    return tag;
+                }
+            });
+
+            tags.value = newTags;
+        }
+    );
 
     const onSubmit = $(async () => {
         if (selectedTool.value === null) {
@@ -92,10 +144,16 @@ export default component$(() => {
                 tagRequirementId: formTagRequirements.value,
                 itemName: itemName.value,
                 toolId: selectedTool.value.id,
+                mutuallyExclusiveTagId: mutuallyExclusiveEffectTagIds.value,
             } as TagModel);
 
             tags.value = tags.value.map((tag) =>
                 tag.id === result?.id ? result! : tag
+            );
+
+            await updateMutuallyExclusiveAfterSubmit(
+                result.mutuallyExclusiveTagId,
+                result.id
             );
 
             console.log(tags.value);
@@ -110,9 +168,15 @@ export default component$(() => {
                 tagRequirementId: formTagRequirements.value,
                 itemName: itemName.value,
                 toolId: selectedTool.value.id,
+                mutuallyExclusiveTagId: mutuallyExclusiveEffectTagIds.value,
             });
 
             tags.value = [...tags.value, result];
+
+            await updateMutuallyExclusiveAfterSubmit(
+                result.mutuallyExclusiveTagId,
+                result.id
+            );
         }
 
         clearForm();
@@ -154,6 +218,8 @@ export default component$(() => {
         console.log(tag.tagRequirementId);
         itemName.value = tag.itemName ?? "";
         selectedTool.value = tool;
+        console.log(tag.mutuallyExclusiveTagId);
+        mutuallyExclusiveEffectTagIds.value = tag.mutuallyExclusiveTagId;
     });
 
     return (
@@ -286,6 +352,7 @@ export default component$(() => {
                         )}
                         {availableFormTagsDependencies.value.length != 0 && (
                             <TagDependencies
+                                label="Form Tag Requirements"
                                 availableTags={availableFormTagsDependencies}
                                 selectedTags={formTagRequirements}
                                 onClick$={(tagId) => {
@@ -301,6 +368,31 @@ export default component$(() => {
                                     } else {
                                         formTagRequirements.value = [
                                             ...formTagRequirements.value,
+                                            tagId,
+                                        ];
+                                    }
+                                }}
+                            />
+                        )}
+
+                        {availableEffectTagDependencies.value.length != 0 && (
+                            <TagDependencies
+                                label="Mutually Exclusive Effect Tags"
+                                availableTags={availableEffectTagDependencies}
+                                selectedTags={mutuallyExclusiveEffectTagIds}
+                                onClick$={(tagId) => {
+                                    if (
+                                        mutuallyExclusiveEffectTagIds.value.includes(
+                                            tagId
+                                        )
+                                    ) {
+                                        mutuallyExclusiveEffectTagIds.value =
+                                            mutuallyExclusiveEffectTagIds.value.filter(
+                                                (id) => id !== tagId
+                                            );
+                                    } else {
+                                        mutuallyExclusiveEffectTagIds.value = [
+                                            ...mutuallyExclusiveEffectTagIds.value,
                                             tagId,
                                         ];
                                     }

@@ -1,5 +1,6 @@
 import { server$ } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
+import { create } from "domain";
 import { type Explainer, ExplainerStage, isToolExplainer } from "~/models/explainer";
 import { EXPLAINER_TYPE_TABLE, EXPLAINER_TYPE_TEXT, ExplainerBlock } from "~/models/explianerBlock";
 import { ImageModel } from "~/models/imageModel";
@@ -92,7 +93,12 @@ export const getTags = server$(async (toolId: number) => {
 export const getAllTags = server$(async () => {
   const prisma = getPrisma();
 
-  const tags = await prisma.tags.findMany();
+  const tags = await prisma.tags.findMany({
+    include: {
+      mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_first_tagTotags: true,
+      mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags: true
+    }
+  });
 
   return Promise.all(tags.map(async tag => {
     return {
@@ -108,7 +114,14 @@ export const getAllTags = server$(async () => {
       })).map(tagDep => tagDep.form_tag_id),
       description: tag.description,
       itemName: tag.item_name,
-      toolId: tag.tool_id
+      toolId: tag.tool_id,
+      mutuallyExclusiveTagId: [
+        ...tag.mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_first_tagTotags
+          .map(({ second_tag }) =>
+            second_tag
+          ), ...tag.mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags
+            .map(({ first_tag }) =>
+              first_tag)]
     } as TagModel;
   }
   ));
@@ -175,7 +188,7 @@ export const getExplainerForTierStage = server$(async (toolId: number) => {
       stage: ExplainerStage.Tier,
     },
     include: {
-      explainer_blocks:true
+      explainer_blocks: true
     }
   });
 
@@ -190,7 +203,7 @@ export const getExplainerForTagStage = server$(async () => {
       stage: ExplainerStage.Tags
     },
     include: {
-      explainer_blocks:true
+      explainer_blocks: true
     }
   });
 
@@ -443,6 +456,9 @@ export const updateTierInfo = server$<(tierInfo: ItemTierInfo, rarity: Rarity) =
 export const updateTag = server$<(tag: TagModel) => Promise<TagModel>>(async (tag: TagModel) => {
   const prisma = getPrisma();
 
+  console.log(tag)
+  console.log("Quack")
+
   const updatedTag = await prisma.tags.update({
     where: {
       id: tag.id
@@ -458,6 +474,38 @@ export const updateTag = server$<(tag: TagModel) => Promise<TagModel>>(async (ta
       tool_id: tag.toolId
     }
   });
+  console.log("Quack2")
+
+
+  try {
+    await prisma.mutually_exclusive_effect_tags.deleteMany({
+      where: {
+        OR: [{
+          first_tag: updatedTag.id,
+        }, {
+          second_tag: updatedTag.id
+        }]
+      }
+    })
+  } catch (e) {
+    console.log(e)
+  }
+
+  console.log("Quack3")
+
+
+  console.log(tag.mutuallyExclusiveTagId)
+
+  await Promise.all(tag.mutuallyExclusiveTagId.map(mutuallyExclusiveTagId =>
+    prisma.mutually_exclusive_effect_tags.create({
+      data: {
+        first_tag: updatedTag.id,
+        second_tag: mutuallyExclusiveTagId
+      }
+    })))
+
+  console.log("here")
+
 
   if (tag.type === TagType.EffectTag) {
     // Update the tag requirements relationships
@@ -488,7 +536,8 @@ export const updateTag = server$<(tag: TagModel) => Promise<TagModel>>(async (ta
     })).map(tagDep => tagDep.form_tag_id),
     description: updatedTag.description,
     itemName: updatedTag.item_name,
-    toolId: updatedTag.tool_id
+    toolId: updatedTag.tool_id,
+    mutuallyExclusiveTagId: tag.mutuallyExclusiveTagId
   } as TagModel;
 }
 );
@@ -506,7 +555,16 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
         item_name: tag.itemName ?? "",
         cost_value: doesTagTakeAllSlots(tag.slotCost) ? null : tag.slotCost.value,
         cost_takes_all: doesTagTakeAllSlots(tag.slotCost) ? 1 : 0,
-        tool_id: tag.toolId
+        tool_id: tag.toolId,
+        mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_first_tagTotags: {
+          create: tag.mutuallyExclusiveTagId.map(tagId => ({
+            second_tag: tagId
+          }))
+        }
+      },
+      include: {
+        mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_first_tagTotags: true,
+        mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags: true
       }
     });
 
@@ -517,6 +575,15 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
       }
     })));
 
+    // const mutuallyExclusiveTags = await Promise.all(
+    //   tag.mutuallyExclusiveTagId.map(mutuallyExclusiveTagId =>
+    //     prisma.mutually_exclusive_effect_tags.create({
+    //       data: {
+    //         first_tag: createdTag.id,
+    //         second_tag: mutuallyExclusiveTagId
+    //       }
+    //     })));
+
     return {
       id: createdTag.id,
       name: createdTag.name,
@@ -526,7 +593,15 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
       tagRequirementId: tagReq.map(tagDep => tagDep.form_tag_id),
       description: createdTag.description,
       itemName: createdTag.item_name,
-      toolId: createdTag.tool_id
+      toolId: createdTag.tool_id,
+      mutuallyExclusiveTagId:
+        [...createdTag.mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_first_tagTotags.map(
+          ({ second_tag }) =>
+            second_tag
+        ), ...createdTag.mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags.map(
+          ({ first_tag }) =>
+            first_tag
+        )]
     } as TagModel;
   }
 );

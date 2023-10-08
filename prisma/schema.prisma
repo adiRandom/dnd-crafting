@@ -20,6 +20,14 @@ model effect_tag_deps {
   tags_effect_tag_deps_form_tag_idTotags   tags @relation("effect_tag_deps_form_tag_idTotags", fields: [form_tag_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
+model explainer_blocks {
+  id           Int        @id @default(autoincrement())
+  content      String
+  explainer_id Int
+  type         String
+  explainers   explainers @relation(fields: [explainer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
 model explainers {
   id               Int                @id @default(autoincrement())
   title            String
@@ -30,20 +38,41 @@ model explainers {
   explainer_blocks explainer_blocks[]
 }
 
+model images {
+  id           Int    @id @default(autoincrement())
+  url          String
+  rarity_index Int
+  form_tag_id  Int
+  tags         tags   @relation(fields: [form_tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model mutually_exclusive_effect_tags {
+  first_tag                                            Int
+  second_tag                                           Int
+  tags_mutually_exclusive_effect_tags_second_tagTotags tags @relation("mutually_exclusive_effect_tags_second_tagTotags", fields: [second_tag], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tags_mutually_exclusive_effect_tags_first_tagTotags  tags @relation("mutually_exclusive_effect_tags_first_tagTotags", fields: [first_tag], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([first_tag, second_tag])
+  @@index([second_tag], map: "mutually_exclusive_effect_tags_second_tag_index")
+  @@index([first_tag], map: "mutually_exclusive_effect_tags_first_tag_index")
+}
+
 model tags {
-  id                                                  Int               @id @default(autoincrement())
-  name                                                String
-  is_form                                             Int
-  cost_value                                          Int?
-  cost_takes_all                                      Int
-  min_rarity_id                                       Int
-  description                                         String
-  item_name                                           String
-  tool_id                                             Int
-  effect_tag_deps_effect_tag_deps_effect_tag_idTotags effect_tag_deps[] @relation("effect_tag_deps_effect_tag_idTotags")
-  effect_tag_deps_effect_tag_deps_form_tag_idTotags   effect_tag_deps[] @relation("effect_tag_deps_form_tag_idTotags")
-  images                                              images[]
-  tools                                               tools             @relation(fields: [tool_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                                                                             Int                              @id @default(autoincrement())
+  name                                                                           String
+  is_form                                                                        Int
+  cost_value                                                                     Int?
+  cost_takes_all                                                                 Int
+  min_rarity_id                                                                  Int
+  description                                                                    String
+  item_name                                                                      String
+  tool_id                                                                        Int
+  effect_tag_deps_effect_tag_deps_effect_tag_idTotags                            effect_tag_deps[]                @relation("effect_tag_deps_effect_tag_idTotags")
+  effect_tag_deps_effect_tag_deps_form_tag_idTotags                              effect_tag_deps[]                @relation("effect_tag_deps_form_tag_idTotags")
+  images                                                                         images[]
+  mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags mutually_exclusive_effect_tags[] @relation("mutually_exclusive_effect_tags_second_tagTotags")
+  mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_first_tagTotags  mutually_exclusive_effect_tags[] @relation("mutually_exclusive_effect_tags_first_tagTotags")
+  tools                                                                          tools                            @relation(fields: [tool_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model tier_info {
@@ -62,20 +91,4 @@ model tools {
   name  String
   emoji String?
   tags  tags[]
-}
-
-model images {
-  id           Int    @id @default(autoincrement())
-  url          String
-  rarity_index Int
-  form_tag_id  Int
-  tags         tags   @relation(fields: [form_tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model explainer_blocks {
-  id           Int        @id @default(autoincrement())
-  content      String
-  explainer_id Int
-  type         String
-  explainers   explainers @relation(fields: [explainer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
