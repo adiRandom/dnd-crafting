@@ -1,6 +1,7 @@
 .button {
     width: 50vw;
     height: 128px;
+    flex-shrink: 0;
     background: url("/assets/grunge.jpg"), var(--primary-btn);
     background-size: cover;
     background-blend-mode: darken;
