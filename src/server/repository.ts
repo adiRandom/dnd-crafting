@@ -1,7 +1,7 @@
 import { server$ } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
 import { create } from "domain";
-import { type Explainer, ExplainerStage, isToolExplainer } from "~/models/explainer";
+import { type Explainer, ExplainerStage, isExplainerWithTool } from "~/models/explainer";
 import { EXPLAINER_TYPE_TABLE, EXPLAINER_TYPE_TEXT, ExplainerBlock } from "~/models/explianerBlock";
 import { ImageModel } from "~/models/imageModel";
 import type { ItemTierInfo } from "~/models/itemTierInfo";
@@ -203,14 +203,44 @@ export const getExplainerForTierStage = server$(async (toolId: number) => {
     }
   });
 
-  return explainer;
-});
+  if (!explainer) {
+    return null;
+  }
 
-export const getExplainerForTagStage = server$(async () => {
+    if (explainer.dependency_type === "TOOL") {
+      return {
+        id: explainer.id,
+        title: explainer.title,
+        text: explainer.text,
+        toolId: explainer.dependency ?? 0,
+        stage: explainer.stage,
+        blocks: explainer.explainer_blocks.map(block => ({
+          id: block.id,
+          content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+        } as ExplainerBlock))
+      } as Explainer;
+    } else {
+      return {
+        id: explainer.id,
+        title: explainer.title,
+        text: explainer.text,
+        stage: explainer.stage,
+        blocks: explainer.explainer_blocks.map(block => ({
+          id: block.id,
+          content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+        } as ExplainerBlock))
+      } as Explainer;
+    }
+  });
+
+
+export const getExplainerForTagStage = server$(async(toolId: number) => {
   const prisma = getPrisma();
 
   const explainer = await prisma.explainers.findFirst({
     where: {
+      dependency_type: "TOOL",
+      dependency: toolId,
       stage: ExplainerStage.Tags
     },
     include: {
@@ -218,7 +248,34 @@ export const getExplainerForTagStage = server$(async () => {
     }
   });
 
-  return explainer;
+  if (!explainer) {
+    return null;
+  }
+
+  if (explainer.dependency_type === "TOOL") {
+    return {
+      id: explainer.id,
+      title: explainer.title,
+      text: explainer.text,
+      toolId: explainer.dependency ?? 0,
+      stage: explainer.stage,
+      blocks: explainer.explainer_blocks.map(block => ({
+        id: block.id,
+        content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+      } as ExplainerBlock))
+    } as Explainer;
+  } else {
+    return {
+      id: explainer.id,
+      title: explainer.title,
+      text: explainer.text,
+      stage: explainer.stage,
+      blocks: explainer.explainer_blocks.map(block => ({
+        id: block.id,
+        content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+      } as ExplainerBlock))
+    } as Explainer;
+  }
 });
 
 
@@ -348,9 +405,9 @@ export const updateExplainer = server$<(explainer: Explainer) => Promise<Explain
       data: {
         title: explainer.title,
         text: explainer.text,
-        dependency: isToolExplainer(explainer) ? explainer.toolId : null,
+        dependency: isExplainerWithTool(explainer) ? explainer.toolId : null,
         stage: explainer.stage,
-        dependency_type: isToolExplainer(explainer) ? "TOOL" : undefined,
+        dependency_type: isExplainerWithTool(explainer) ? "TOOL" : undefined,
       }
     });
 
@@ -391,9 +448,9 @@ export const createExplainer = server$<(explainer: Explainer) => Promise<Explain
       data: {
         title: explainer.title,
         text: explainer.text,
-        dependency: isToolExplainer(explainer) ? explainer.toolId : null,
+        dependency: isExplainerWithTool(explainer) ? explainer.toolId : null,
         stage: explainer.stage,
-        dependency_type: isToolExplainer(explainer) ? "TOOL" : undefined,
+        dependency_type: isExplainerWithTool(explainer) ? "TOOL" : undefined,
         explainer_blocks: {
           create: explainer.blocks.map(block => ({
             id: block.id,

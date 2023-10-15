@@ -23,7 +23,7 @@ export const useExplainModal = routeLoader$(async (ev) => {
     return explainer
         ? ({
               title: explainer.title,
-              blocks: explainer.explainer_blocks.map((block) => ({
+              blocks: explainer.blocks.map((block) => ({
                   id: block.id,
                   content: block.content,
               })),

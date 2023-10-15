@@ -18,7 +18,7 @@ export type Explainer = {
     title: string;
     text: string;
     stage: ExplainerStage,
-  blocks: ExplainerBlock[];
+    blocks: ExplainerBlock[];
   }
 
 
@@ -28,8 +28,8 @@ export enum ExplainerStage {
   Tags = 2,
 }
 
-export function isToolExplainer(explainer: Explainer): explainer is Explainer & { toolId: number } {
-  return explainer.stage === ExplainerStage.Tier
+export function isExplainerWithTool(explainer: Explainer): explainer is Explainer & { toolId: number } {
+  return explainer.stage !== ExplainerStage.Tool
 }
 
 export function explainerStageName(stage: ExplainerStage) {

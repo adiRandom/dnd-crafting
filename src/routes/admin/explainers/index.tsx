@@ -14,7 +14,7 @@ import {
     Explainer,
     ExplainerStage,
     explainerStageName,
-    isToolExplainer,
+    isExplainerWithTool,
 } from "~/models/explainer";
 import { ExplainerTable } from "~/models/explainerTable";
 import ExplainerTableView from "~/components/table/ExplainerTableView";
@@ -41,12 +41,11 @@ export default component$(() => {
     const onSubmit = $(async () => {
         let result = null as Explainer | null;
         if (isEdit.value) {
-            if (explainerStage.value === ExplainerStage.Tier) {
+            if (explainerStage.value === ExplainerStage.Tool) {
                 result = await updateExplainer({
                     ...selectedExplainer.value!,
                     title: explainerTtitle.value,
                     text: explainerDescription.value,
-                    toolId: explainerTool.value?.id,
                     stage: explainerStage.value,
                     blocks: explainerBlocks.value,
                 } as Explainer);
@@ -55,6 +54,7 @@ export default component$(() => {
                     ...selectedExplainer.value!,
                     title: explainerTtitle.value,
                     text: explainerDescription.value,
+                    toolId: explainerTool.value?.id,
                     stage: explainerStage.value,
                     blocks: explainerBlocks.value,
                 } as Explainer);
@@ -64,11 +64,10 @@ export default component$(() => {
                 explainer.id === result?.id ? result! : explainer
             );
         } else {
-            if (explainerStage.value === ExplainerStage.Tier) {
+            if (explainerStage.value === ExplainerStage.Tool) {
                 result = await createExplainer({
                     title: explainerTtitle.value,
                     text: explainerDescription.value,
-                    toolId: explainerTool.value?.id,
                     stage: explainerStage.value,
                     blocks: explainerBlocks.value,
                     id: 0,
@@ -77,6 +76,7 @@ export default component$(() => {
                 result = await createExplainer({
                     title: explainerTtitle.value,
                     text: explainerDescription.value,
+                    toolId: explainerTool.value?.id,
                     stage: explainerStage.value,
                     blocks: explainerBlocks.value,
                     id: 0,
@@ -122,7 +122,7 @@ export default component$(() => {
         explainerDescription.value = explainer.text;
         explainerStage.value = explainer.stage;
         explainerBlocks.value = explainer.blocks;
-        explainerTool.value = isToolExplainer(explainer)
+        explainerTool.value = isExplainerWithTool(explainer)
             ? tools.value.find((tool) => tool.id === explainer.toolId)
             : undefined;
     });
@@ -362,7 +362,7 @@ export default component$(() => {
                         <option value={ExplainerStage.Tier}>2. Tier</option>
                         <option value={ExplainerStage.Tags}>3. Tag</option>
                     </select>
-                    {explainerStage.value === ExplainerStage.Tier && (
+                    {explainerStage.value !== ExplainerStage.Tool && (
                         <select
                             class={styles.selectInput}
                             value={explainerTool.value?.id}

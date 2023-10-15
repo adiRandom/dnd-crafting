@@ -33,14 +33,16 @@ export const useExplainerModal = routeLoader$(async () => {
 
 export const useToolButtons = routeLoader$(async () => {
     const tools = await getTools();
-    return tools.map(
-        (tool) =>
-            ({
-                icon: tool.emoji,
-                label: tool.name,
-                href: `/tool/${tool.id}`,
-            } as ButtonOptions)
-    );
+    return tools
+        .map(
+            (tool) =>
+                ({
+                    icon: tool.emoji,
+                    label: tool.name,
+                    href: `/tool/${tool.id}`,
+                } as ButtonOptions)
+        )
+        .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0));
 });
 
 export default component$(() => {

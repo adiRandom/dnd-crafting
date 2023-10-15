@@ -12,10 +12,13 @@ import styles from "./index.module.css";
 
 export const useTools = routeLoader$(() => getTools());
 
-
 export default component$(() => {
     const initialTools = useTools();
-    const tools = useSignal(initialTools.value);
+    const tools = useSignal(
+        initialTools.value.sort((a, b) =>
+            a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+        )
+    );
     const selectedTool = useSignal(null as Tool | null);
     const isEdit = useComputed$(() => !!selectedTool.value);
 
@@ -40,10 +43,12 @@ export default component$(() => {
                 id: 0,
             });
 
-            tools.value = [...tools.value, result];
+            tools.value = [...tools.value, result].sort((a, b) =>
+            a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+        );
         }
-      
-      selectedTool.value = null;
+
+        selectedTool.value = null;
     });
 
     const onDelete = $(async () => {
@@ -54,26 +59,26 @@ export default component$(() => {
                 (tool) => tool.id !== selectedTool.value?.id
             );
         }
-      
-      selectedTool.value = null;
 
-      toolName.value = "";
-      toolEmoji.value = "";
+        selectedTool.value = null;
+
+        toolName.value = "";
+        toolEmoji.value = "";
     });
-  
-  const onCellClick = $(async (tool: Tool) => {
-    if (selectedTool.value?.id === tool.id) {
-      selectedTool.value = null;
 
-      toolName.value = "";
-      toolEmoji.value = "";
-      return;
-    }
+    const onCellClick = $(async (tool: Tool) => {
+        if (selectedTool.value?.id === tool.id) {
+            selectedTool.value = null;
 
-    selectedTool.value = tool;
-    toolName.value = tool.name;
-    toolEmoji.value = tool.emoji??"";
-  });
+            toolName.value = "";
+            toolEmoji.value = "";
+            return;
+        }
+
+        selectedTool.value = tool;
+        toolName.value = tool.name;
+        toolEmoji.value = tool.emoji ?? "";
+    });
 
     return (
         <div class={styles.main}>

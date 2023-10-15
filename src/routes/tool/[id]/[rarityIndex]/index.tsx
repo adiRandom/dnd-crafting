@@ -37,13 +37,16 @@ export const useTierInfo = routeLoader$(async (ev) => {
     return await getTierInfoForRarity(parseInt(tierIndex));
 });
 
-export const useExplainModal = routeLoader$(async () => {
-    const explainer = await getExplainerForTagStage();
+export const useExplainModal = routeLoader$(async (ev) => {
+    const toolId = ev.params.id;
+
+    const explainer = await getExplainerForTagStage(parseInt(toolId));
+    console.log(explainer)
 
     return explainer
         ? ({
               title: explainer.title,
-              blocks: explainer.explainer_blocks.map((block) => ({
+              blocks: explainer.blocks.map((block) => ({
                   id: block.id,
                   content: block.content,
               })),
