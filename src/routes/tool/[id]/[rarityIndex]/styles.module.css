@@ -5,6 +5,7 @@
     flex-direction: column;
     align-items: center;
     overflow: hidden;
+    overflow-y: auto;
 }
 
 .title {
@@ -118,7 +119,7 @@
 .selectedTagContainerWithContent {
     transform: scale(1) !important;
     opacity: 1 !important;
-    height: 96px;;
+    height: 48px
 }
 
 .missing {

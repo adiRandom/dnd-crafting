@@ -20,6 +20,7 @@
     margin-right: 5vw;
     align-items: center;
     flex: 1;
+    max-height: calc(100vh - 8rem);
 }
 
 .buttonContainer {
@@ -47,6 +48,8 @@
     padding: 24px;
     gap: 32px;
     z-index: 1;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .infoContainerNoSelection {
