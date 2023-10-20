@@ -7,6 +7,7 @@ import { ImageModel } from "~/models/imageModel";
 import type { ItemTierInfo } from "~/models/itemTierInfo";
 import type { Rarity } from "~/models/rarity";
 import { RARITIES } from "~/models/rarity";
+import { SummonModel, SummonType } from "~/models/summonModel";
 import type { TagModel } from "~/models/tags";
 import { doesTagTakeAllSlots, TagType } from "~/models/tags";
 import type { Tool } from "~/models/tool";
@@ -207,34 +208,34 @@ export const getExplainerForTierStage = server$(async (toolId: number) => {
     return null;
   }
 
-    if (explainer.dependency_type === "TOOL") {
-      return {
-        id: explainer.id,
-        title: explainer.title,
-        text: explainer.text,
-        toolId: explainer.dependency ?? 0,
-        stage: explainer.stage,
-        blocks: explainer.explainer_blocks.map(block => ({
-          id: block.id,
-          content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
-        } as ExplainerBlock))
-      } as Explainer;
-    } else {
-      return {
-        id: explainer.id,
-        title: explainer.title,
-        text: explainer.text,
-        stage: explainer.stage,
-        blocks: explainer.explainer_blocks.map(block => ({
-          id: block.id,
-          content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
-        } as ExplainerBlock))
-      } as Explainer;
-    }
-  });
+  if (explainer.dependency_type === "TOOL") {
+    return {
+      id: explainer.id,
+      title: explainer.title,
+      text: explainer.text,
+      toolId: explainer.dependency ?? 0,
+      stage: explainer.stage,
+      blocks: explainer.explainer_blocks.map(block => ({
+        id: block.id,
+        content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+      } as ExplainerBlock))
+    } as Explainer;
+  } else {
+    return {
+      id: explainer.id,
+      title: explainer.title,
+      text: explainer.text,
+      stage: explainer.stage,
+      blocks: explainer.explainer_blocks.map(block => ({
+        id: block.id,
+        content: block.type === EXPLAINER_TYPE_TABLE ? JSON.parse(block.content) : block.content
+      } as ExplainerBlock))
+    } as Explainer;
+  }
+});
 
 
-export const getExplainerForTagStage = server$(async(toolId: number) => {
+export const getExplainerForTagStage = server$(async (toolId: number) => {
   const prisma = getPrisma();
 
   const explainer = await prisma.explainers.findFirst({
@@ -798,3 +799,143 @@ export const updateImage = server$<(image: ImageModel) => Promise<ImageModel>>(a
     rarity: RARITIES[updatedImage.rarity_index]
   } as ImageModel;
 })
+
+export const getSummons = server$<() => Promise<SummonModel[]>>(async () => {
+  const prisma = getPrisma();
+
+  const summons = await prisma.summons.findMany();
+
+  return summons.map(summon => {
+    return {
+      id: summon.id,
+      name: summon.name,
+      rarity: RARITIES[summon.rarity_id - 1],
+      stats: {
+        hp: summon.hp,
+        ac: summon.ac,
+        spd: summon.spd,
+        con: summon.con,
+        wis: summon.wis,
+        int: summon.int,
+        cha: summon.cha,
+        str: summon.str,
+        dex: summon.dex
+      },
+      type: summon.type
+    } as SummonModel;
+  });
+})
+
+export const getSummon = server$<(type: SummonType, rarity: Rarity) => Promise<SummonModel | null>>(async (type: "ceramic" | "porcelaine", rarity: Rarity) => {
+  const prisma = getPrisma();
+
+  const summon = await prisma.summons.findFirst({
+    where: {
+      type,
+      rarity_id: RARITIES.indexOf(rarity) + 1
+    }
+  });
+
+  if (!summon) {
+    return null;
+  }
+
+  return {
+    id: summon.id,
+    name: summon.name,
+    rarity: RARITIES[summon.rarity_id - 1],
+    stats: {
+      hp: summon.hp,
+      ac: summon.ac,
+      spd: summon.spd,
+      con: summon.con,
+      wis: summon.wis,
+      int: summon.int,
+      cha: summon.cha,
+      str: summon.str,
+      dex: summon.dex
+    },
+    type: summon.type
+  } as SummonModel;
+})
+
+export const updateSummon = server$<(summon: SummonModel) => Promise<SummonModel>>(async (summon: SummonModel) => {
+  const prisma = getPrisma();
+
+  const updatedSummon = await prisma.summons.update({
+    where: {
+      id: summon.id
+    },
+    data: {
+      name: summon.name,
+      rarity_id: RARITIES.indexOf(summon.rarity) + 1,
+      hp: summon.stats.hp,
+      ac: summon.stats.ac,
+      spd: summon.stats.spd,
+      con: summon.stats.con,
+      wis: summon.stats.wis,
+      int: summon.stats.int,
+      cha: summon.stats.cha,
+      str: summon.stats.str,
+      dex: summon.stats.dex,
+      type: summon.type
+    }
+  });
+
+  return {
+    id: updatedSummon.id,
+    name: updatedSummon.name,
+    rarity: RARITIES[updatedSummon.rarity_id - 1],
+    stats: {
+      hp: updatedSummon.hp,
+      ac: updatedSummon.ac,
+      spd: updatedSummon.spd,
+      con: updatedSummon.con,
+      wis: updatedSummon.wis,
+      int: updatedSummon.int,
+      cha: updatedSummon.cha,
+      str: updatedSummon.str,
+      dex: updatedSummon.dex
+    },
+    type: updatedSummon.type
+  } as SummonModel;
+});
+
+export const createSummon = server$<(summon: SummonModel) => Promise<SummonModel>>(async (summon: SummonModel) => {
+  const prisma = getPrisma();
+
+  const createdSummon = await prisma.summons.create({
+    data: {
+      name: summon.name,
+      rarity_id: RARITIES.indexOf(summon.rarity) + 1,
+      hp: summon.stats.hp,
+      ac: summon.stats.ac,
+      spd: summon.stats.spd,
+      con: summon.stats.con,
+      wis: summon.stats.wis,
+      int: summon.stats.int,
+      cha: summon.stats.cha,
+      str: summon.stats.str,
+      dex: summon.stats.dex,
+      type: summon.type
+    }
+  });
+
+  return {
+    id: createdSummon.id,
+    name: createdSummon.name,
+    rarity: RARITIES[createdSummon.rarity_id - 1],
+    stats: {
+      hp: createdSummon.hp,
+      ac: createdSummon.ac,
+      spd: createdSummon.spd,
+      con: createdSummon.con,
+      wis: createdSummon.wis,
+      int: createdSummon.int,
+      cha: createdSummon.cha,
+      str: createdSummon.str,
+      dex: createdSummon.dex
+    },
+    type: createdSummon.type
+  } as SummonModel;
+});

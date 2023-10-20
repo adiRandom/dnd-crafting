@@ -1,0 +1,139 @@
+.main{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.panes{
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+}
+
+.leftPane{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: calc(100% - 5vh - 20px);
+  overflow: auto;
+  flex: 1;
+}
+
+.cell{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: start;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: var(--primary-btn-transparent);
+  color: var(--primary-text);
+  border: 1px solid var(--separator);
+  font-size: 18px;
+  margin: 0 24px;
+  cursor: pointer;
+}
+
+.cell:hover{
+  background-color: var(--primary-btn);
+  color: var(--primary-text);
+}
+
+.selectedCell{
+  background-color: var(--primary-btn);
+  color: var(--primary-text);
+}
+
+.emoji{
+  font-size: 32px;
+  margin-right: 18px;
+}
+
+.toolName{
+  font-size: 32px;
+}
+
+.rightPane{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  flex: 2;
+}
+
+.input{
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border-color: var(--separator);
+  font-size: 18px;
+  color:var(--accent-text);
+}
+
+.delete{
+  background-color: var(--warning-text);
+  color: var(--primary-text);;
+  border: none;
+}
+
+.buttonBar{
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+
+.inputContainer{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  height: 70vh;
+  overflow-y: auto;
+}
+
+.inputLabel{
+  font-size: 18px;
+  color: var(--primary-text);
+  margin: 2px;
+}
+
+.selectInput{
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border-color: var(--separator);
+  font-size: 18px;
+  color:var(--accent-text);
+  flex-shrink: 0;
+}
+
+.textArea{
+  width: 70%; 
+  min-height: 300px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border-color: var(--separator);
+  font-size: 18px;
+  color:var(--accent-text);
+  resize: none;
+}
+
+.cellSubtitle{
+  font-size: 18px;
+  color: var(--accent-text);
+}
