@@ -821,6 +821,7 @@ export const getSummons = server$<() => Promise<SummonModel[]>>(async () => {
         str: summon.str,
         dex: summon.dex
       },
+      atk: summon.atk,
       type: summon.type
     } as SummonModel;
   });
@@ -855,6 +856,7 @@ export const getSummon = server$<(type: SummonType, rarity: Rarity) => Promise<S
       str: summon.str,
       dex: summon.dex
     },
+    atk: summon.atk,
     type: summon.type
   } as SummonModel;
 })
@@ -878,6 +880,7 @@ export const updateSummon = server$<(summon: SummonModel) => Promise<SummonModel
       cha: summon.stats.cha,
       str: summon.stats.str,
       dex: summon.stats.dex,
+      atk: summon.atk,
       type: summon.type
     }
   });
@@ -895,14 +898,17 @@ export const updateSummon = server$<(summon: SummonModel) => Promise<SummonModel
       int: updatedSummon.int,
       cha: updatedSummon.cha,
       str: updatedSummon.str,
-      dex: updatedSummon.dex
+      dex: updatedSummon.dex,
     },
+    atk: updatedSummon.atk,
     type: updatedSummon.type
   } as SummonModel;
 });
 
 export const createSummon = server$<(summon: SummonModel) => Promise<SummonModel>>(async (summon: SummonModel) => {
   const prisma = getPrisma();
+
+  console.log(summon)
 
   const createdSummon = await prisma.summons.create({
     data: {
@@ -917,7 +923,8 @@ export const createSummon = server$<(summon: SummonModel) => Promise<SummonModel
       cha: summon.stats.cha,
       str: summon.stats.str,
       dex: summon.stats.dex,
-      type: summon.type
+      type: summon.type,
+      atk: summon.atk
     }
   });
 
@@ -936,6 +943,17 @@ export const createSummon = server$<(summon: SummonModel) => Promise<SummonModel
       str: createdSummon.str,
       dex: createdSummon.dex
     },
+    atk: createdSummon.atk,
     type: createdSummon.type
   } as SummonModel;
 });
+
+export const deleteSummon = server$<(summonId: number) => Promise<void>>(async (summonId: number) => {
+  const prisma = getPrisma();
+
+  await prisma.summons.delete({
+    where: {
+      id: summonId
+    }
+  });
+})

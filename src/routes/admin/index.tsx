@@ -65,6 +65,9 @@ export default component$(() => {
                     <Link class={pageSyles.link} href="/admin/images">
                         Images
                     </Link>
+                    <Link class={pageSyles.link} href="/admin/summons">
+                        Summons
+                    </Link>
                 </div>
             ) : (
                 <div class={pageSyles.loginForm}>

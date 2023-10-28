@@ -1,11 +1,12 @@
 import { Rarity } from "./rarity";
 
 export type SummonModel = {
-  id?: number;
+  id: number;
   name: string;
   rarity: Rarity;
   stats: SummonStats;
-  type: SummonType
+  type: SummonType;
+  atk: string;
 }
 
 export type SummonStats = {
