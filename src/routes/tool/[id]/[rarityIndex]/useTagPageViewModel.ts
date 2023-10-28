@@ -7,7 +7,8 @@ import type { TagAvailabilityWithReason } from "~/models/tagAvailability";
 import { TagAvailability } from "~/models/tagAvailability";
 import type { TagModel, TagWithAvailability } from "~/models/tags";
 import { doesTagTakeAllSlots, isTagAvailable } from "~/models/tags";
-import { useTags, useTierInfo, useTool } from ".";
+import { useBaseSummon, useTags, useTierInfo, useTool } from ".";
+import { SummonModel } from "~/models/summonModel";
 
 export function useTagPageViewModel() {
   const selectedFormTag = useSignal<TagModel | null>(null);
@@ -27,12 +28,52 @@ export function useTagPageViewModel() {
 
   const selectedEffectTagIds = useSignal<Record<number, boolean>>({});
 
+  const baseSummon = useBaseSummon()
+
   const showItemCard = useSignal(false);
   const iconUrl = useIconItem(selectedFormTag, rarityIndex);
+
+  const summon = useSignal(null as SummonModel | null)
 
   useTask$(async ({ track }) => {
     track(() => tierInfo.value)
     remainingSlots.value = tierInfo.value?.tags
+  })
+
+  // Compute the summon
+  useTask$(async ({ track }) => {
+    track(() => [baseSummon.value, selectedEffectTagIds.value])
+
+    if (baseSummon.value === null) {
+      return
+    }
+
+    let bonusAc = 0
+    let bonusSpd = 0
+
+    const selectedEffectTags = Object.keys(selectedEffectTagIds.value).map(key => Number.parseInt(key))
+    selectedEffectTags.forEach(id => {
+      const tag = tags.value.effectTags.find(tag => tag.id === id)
+
+      if (tag?.summonBonus.ac) {
+        bonusAc += tag.summonBonus.ac
+      }
+
+      if (tag?.summonBonus.spd) {
+        bonusSpd += tag.summonBonus.spd
+      }
+    })
+
+    const newSummon = {
+      ...baseSummon.value,
+      stats: {
+        ...baseSummon.value.stats,
+        ac: baseSummon.value.stats.ac + bonusAc,
+        spd: baseSummon.value.stats.spd + bonusSpd
+      }
+    } as SummonModel
+
+    summon.value = newSummon
   })
 
   const calculatedRemainingSlots = useComputed$(() => {
@@ -273,7 +314,7 @@ export function useTagPageViewModel() {
     // Use html2canvas to convert the html to an image
     // Open a new window with the image
 
-    html2canvas(document.getElementById("item-card") as HTMLElement,
+    html2canvas(document.getElementById(summon.value != null ? "item-and-summon" : "item-card") as HTMLElement,
       { allowTaint: true, useCORS: true }
     ).then(canvas => {
       const dataURL = canvas.toDataURL("image/png");
@@ -300,7 +341,8 @@ export function useTagPageViewModel() {
     iconUrl,
     onContinueClick,
     print,
-    onClearFormTagClick
+    onClearFormTagClick,
+    summon
   }
 }
 

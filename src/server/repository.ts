@@ -299,7 +299,7 @@ export const getTools = server$(async () => {
       id: tool.id,
       name: tool.name,
       emoji: tool.emoji,
-      isSummon: tool.isSummon === 1
+      summonType: tool.summonType as SummonType | null
     } as Tool;
   });
 });
@@ -321,7 +321,7 @@ export const getTool = server$(async (toolId: number) => {
     id: tool.id,
     name: tool.name,
     emoji: tool.emoji,
-    isSummon: tool.isSummon === 1
+    summonType: tool.summonType as SummonType | null
   } as Tool;
 });
 
@@ -347,7 +347,7 @@ export const updateTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: To
     data: {
       name: tool.name,
       emoji: tool.emoji,
-      isSummon: tool.isSummon ? 1 : 0
+      summonType: tool.summonType
     }
   });
 
@@ -355,7 +355,7 @@ export const updateTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: To
     id: updatedTool.id,
     name: updatedTool.name,
     emoji: updatedTool.emoji ?? undefined,
-    isSummon: updatedTool.isSummon === 1
+    summonType: updatedTool.summonType as SummonType | null
   };
 });
 
@@ -366,7 +366,7 @@ export const createTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: To
     data: {
       name: tool.name,
       emoji: tool.emoji,
-      isSummon: tool.isSummon ? 1 : 0
+      summonType: tool.summonType
     }
   });
 
@@ -374,7 +374,7 @@ export const createTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: To
     id: createdTool.id,
     name: createdTool.name,
     emoji: createdTool.emoji ?? undefined,
-    isSummon: createdTool.isSummon === 1
+    summonType: createdTool.summonType as SummonType | null
   };
 });
 
@@ -853,7 +853,8 @@ export const getSummons = server$<() => Promise<SummonModel[]>>(async () => {
         dex: summon.dex
       },
       atk: summon.atk,
-      type: summon.type
+      type: summon.type,
+      creatureType:summon.creature_type
     } as SummonModel;
   });
 })
@@ -888,7 +889,8 @@ export const getSummon = server$<(type: SummonType, rarity: Rarity) => Promise<S
       dex: summon.dex
     },
     atk: summon.atk,
-    type: summon.type
+    type: summon.type,
+    creatureType:summon.creature_type
   } as SummonModel;
 })
 
@@ -912,7 +914,8 @@ export const updateSummon = server$<(summon: SummonModel) => Promise<SummonModel
       str: summon.stats.str,
       dex: summon.stats.dex,
       atk: summon.atk,
-      type: summon.type
+      type: summon.type,
+      creature_type:summon.creatureType
     }
   });
 
@@ -932,7 +935,8 @@ export const updateSummon = server$<(summon: SummonModel) => Promise<SummonModel
       dex: updatedSummon.dex,
     },
     atk: updatedSummon.atk,
-    type: updatedSummon.type
+    type: updatedSummon.type,
+    creatureType:updatedSummon.creature_type
   } as SummonModel;
 });
 
@@ -955,7 +959,8 @@ export const createSummon = server$<(summon: SummonModel) => Promise<SummonModel
       str: summon.stats.str,
       dex: summon.stats.dex,
       type: summon.type,
-      atk: summon.atk
+      atk: summon.atk,
+      creature_type:summon.creatureType
     }
   });
 
@@ -975,7 +980,8 @@ export const createSummon = server$<(summon: SummonModel) => Promise<SummonModel
       dex: createdSummon.dex
     },
     atk: createdSummon.atk,
-    type: createdSummon.type
+    type: createdSummon.type,
+    creatureType:createdSummon.creature_type
   } as SummonModel;
 });
 

@@ -97,3 +97,14 @@
   color: var(--primary-text);
   margin: 2px;
 }
+.selectInput{
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border-color: var(--separator);
+  font-size: 18px;
+  color:var(--accent-text);
+  flex-shrink: 0;
+}

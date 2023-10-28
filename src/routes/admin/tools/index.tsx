@@ -9,6 +9,11 @@ import {
     updateTool,
 } from "~/server/repository";
 import styles from "./index.module.css";
+import {
+    CERAMIC_TYPE,
+    PORCELAINE_TYPE,
+    SummonType,
+} from "~/models/summonModel";
 
 export const useTools = routeLoader$(() => getTools());
 
@@ -25,6 +30,7 @@ export default component$(() => {
     const toolName = useSignal("");
     const toolEmoji = useSignal("");
     const isSummon = useSignal(false);
+    const summonType = useSignal(CERAMIC_TYPE as SummonType);
 
     const onSubmit = $(async () => {
         if (isEdit.value) {
@@ -32,7 +38,7 @@ export default component$(() => {
                 ...selectedTool.value!,
                 name: toolName.value,
                 emoji: toolEmoji.value,
-                isSummon: isSummon.value,
+                summonType: isSummon.value ? summonType.value : null,
             } as Tool);
 
             tools.value = tools.value.map((tool) =>
@@ -43,12 +49,12 @@ export default component$(() => {
                 name: toolName.value,
                 emoji: toolEmoji.value,
                 id: 0,
-                isSummon: isSummon.value,
+                summonType: isSummon.value ? summonType.value : null,
             });
 
             tools.value = [...tools.value, result].sort((a, b) =>
-            a.name < b.name ? -1 : a.name > b.name ? 1 : 0
-        );
+                a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+            );
         }
 
         selectedTool.value = null;
@@ -68,6 +74,7 @@ export default component$(() => {
         toolName.value = "";
         toolEmoji.value = "";
         isSummon.value = false;
+        summonType.value = CERAMIC_TYPE;
     });
 
     const onCellClick = $(async (tool: Tool) => {
@@ -76,13 +83,16 @@ export default component$(() => {
 
             toolName.value = "";
             toolEmoji.value = "";
+            isSummon.value = false;
+            summonType.value = CERAMIC_TYPE;
             return;
         }
 
         selectedTool.value = tool;
         toolName.value = tool.name;
         toolEmoji.value = tool.emoji ?? "";
-        isSummon.value = tool.isSummon;
+        isSummon.value = tool.summonType !== null;
+        summonType.value = tool.summonType ?? CERAMIC_TYPE;
     });
 
     return (
@@ -133,6 +143,25 @@ export default component$(() => {
                             isSummon.value = ev.target.checked;
                         }}
                     />
+
+                    {isSummon.value && (
+                        <>
+                            <h3 class={styles.inputLabel}>Summon Type</h3>
+                            <select
+                                class={styles.selectInput}
+                                value={summonType.value ?? CERAMIC_TYPE}
+                                onChange$={(ev) =>
+                                    (summonType.value = ev.target
+                                        .value as SummonType)
+                                }
+                            >
+                                <option value={CERAMIC_TYPE}>Ceramic</option>
+                                <option value={PORCELAINE_TYPE}>
+                                    Porcelaine
+                                </option>
+                            </select>
+                        </>
+                    )}
                     <div class={styles.buttonBar}>
                         <PrimaryButton onClick$={onSubmit} label="Submit" />
                         <PrimaryButton

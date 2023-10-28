@@ -4,6 +4,7 @@
     padding: 6px;
     border-color: var(--separator);
     background-color: var(--background);
+    margin: 8px;
 }
 
 .borderContainer {

@@ -1,6 +1,8 @@
+import { SummonType } from "./summonModel";
+
 export type Tool = {
   id: number;
   name: string;
   emoji?: string;
-  isSummon: boolean;
+  summonType: SummonType | null;
 }

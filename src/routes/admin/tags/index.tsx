@@ -353,35 +353,44 @@ export default component$(() => {
                             ))}
                         </select>
 
-                        {selectedTool.value?.isSummon && (
-                            <>
-                                <h3 class={styles.inputLabel}>Bonus AC for Summon</h3>
-                                <input
-                                    class={styles.input}
-                                    type="text"
-                                    value={bonusAc.value}
-                                    onChange$={(ev) => {
-                                        const value = parseInt(ev.target.value);
-                                        bonusAc.value = isNaN(value)
-                                            ? 0
-                                            : value;
-                                    }}
-                                />
+                        {selectedTool.value?.summonType &&
+                            tagType.value === TagType.EffectTag && (
+                                <>
+                                    <h3 class={styles.inputLabel}>
+                                        Bonus AC for Summon
+                                    </h3>
+                                    <input
+                                        class={styles.input}
+                                        type="text"
+                                        value={bonusAc.value}
+                                        onChange$={(ev) => {
+                                            const value = parseInt(
+                                                ev.target.value
+                                            );
+                                            bonusAc.value = isNaN(value)
+                                                ? 0
+                                                : value;
+                                        }}
+                                    />
 
-                                <h3 class={styles.inputLabel}>Bonus Speed for Summon</h3>
-                                <input
-                                    class={styles.input}
-                                    type="text"
-                                    value={bonusSpd.value}
-                                    onChange$={(ev) => {
-                                        const value = parseInt(ev.target.value);
-                                        bonusSpd.value = isNaN(value)
-                                            ? 0
-                                            : value;
-                                    }}
-                                />
-                            </>
-                        )}
+                                    <h3 class={styles.inputLabel}>
+                                        Bonus Speed for Summon
+                                    </h3>
+                                    <input
+                                        class={styles.input}
+                                        type="text"
+                                        value={bonusSpd.value}
+                                        onChange$={(ev) => {
+                                            const value = parseInt(
+                                                ev.target.value
+                                            );
+                                            bonusSpd.value = isNaN(value)
+                                                ? 0
+                                                : value;
+                                        }}
+                                    />
+                                </>
+                            )}
                         {tagType.value === TagType.FormTag && (
                             <>
                                 <h3 class={styles.inputLabel}>Item Name</h3>

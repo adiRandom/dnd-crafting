@@ -90,27 +90,28 @@ model tier_info {
 }
 
 model tools {
-  id       Int     @id @default(autoincrement())
-  name     String
-  emoji    String?
-  isSummon Int     @default(0)
-  tags     tags[]
+  id         Int     @id @default(autoincrement())
+  name       String
+  emoji      String?
+  summonType String?
+  tags       tags[]
 }
 
 model summons {
-  id        Int       @id @default(autoincrement())
-  hp        Int
-  spd       Int
-  ac        Int
-  str       Int
-  dex       Int
-  con       Int
-  cha       Int
-  int       Int
-  wis       Int
-  rarity_id Int
-  name      String
-  type      String
-  atk       String
-  tier_info tier_info @relation(fields: [rarity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id            Int       @id @default(autoincrement())
+  hp            Int
+  spd           Int
+  ac            Int
+  str           Int
+  dex           Int
+  con           Int
+  cha           Int
+  int           Int
+  wis           Int
+  rarity_id     Int
+  name          String
+  type          String
+  atk           String
+  creature_type String    @default("spirit")
+  tier_info     tier_info @relation(fields: [rarity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

@@ -6,6 +6,7 @@ export type SummonModel = {
   rarity: Rarity;
   stats: SummonStats;
   type: SummonType;
+  creatureType: string;
   atk: string;
 }
 

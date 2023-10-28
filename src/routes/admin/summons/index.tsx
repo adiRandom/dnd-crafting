@@ -37,6 +37,8 @@ export default component$(() => {
     const cha = useSignal(0);
     const spd = useSignal(0);
 
+    const creatureType = useSignal("");
+
     const clearForm = $(() => {
         selectedSummon.value = null;
         summonName.value = "";
@@ -51,6 +53,8 @@ export default component$(() => {
         str.value = 0;
         wis.value = 0;
         cha.value = 0;
+        spd.value = 0;
+        creatureType.value = "";
     });
 
     const onSubmit = $(async () => {
@@ -61,6 +65,7 @@ export default component$(() => {
                 type: summonType.value,
                 rarity: rarity.value,
                 atk: atk.value,
+                creatureType: creatureType.value,
                 stats: {
                     hp: hp.value,
                     ac: ac.value,
@@ -84,6 +89,7 @@ export default component$(() => {
                 type: summonType.value,
                 rarity: rarity.value,
                 atk: atk.value,
+                creatureType: creatureType.value,
                 stats: {
                     hp: hp.value,
                     ac: ac.value,
@@ -136,6 +142,7 @@ export default component$(() => {
         wis.value = summon.stats.wis;
         cha.value = summon.stats.cha;
         spd.value = summon.stats.spd;
+        creatureType.value = summon.creatureType;
     });
 
     return (
@@ -171,6 +178,16 @@ export default component$(() => {
                             }
                         />
 
+                        <h3 class={styles.inputLabel}>Creature Type</h3>
+                        <input
+                            class={styles.input}
+                            type="text"
+                            value={creatureType.value}
+                            onChange$={(ev) =>
+                                (creatureType.value = ev.target.value)
+                            }
+                        />
+
                         <h3 class={styles.inputLabel}>Summon Type</h3>
                         <select
                             class={styles.selectInput}
@@ -180,7 +197,7 @@ export default component$(() => {
                             }
                         >
                             <option value={CERAMIC_TYPE}>Ceramic</option>
-                            <option value={PORCELAINE_TYPE}>PORCELAINE</option>
+                            <option value={PORCELAINE_TYPE}>Porcelaine</option>
                         </select>
 
                         <h3 class={styles.inputLabel}>Rarity</h3>
@@ -303,7 +320,7 @@ export default component$(() => {
                                 const value = parseInt(ev.target.value);
                                 cha.value = isNaN(value) ? 0 : value;
                             }}
-                        /> 
+                        />
                     </div>
                     <div class={styles.buttonBar}>
                         <PrimaryButton onClick$={onSubmit} label="Submit" />

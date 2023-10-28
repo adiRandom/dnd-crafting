@@ -1,6 +1,7 @@
 import { TagType, isTagAvailable } from "~/models/tags";
 import {
     getExplainerForTagStage,
+    getSummon,
     getTags,
     getTierInfoForRarity,
     getTool,
@@ -17,6 +18,9 @@ import { capitalize } from "~/lib/stringUtils";
 import { ICON } from "~/theme/color";
 import { useTagPageViewModel } from "./useTagPageViewModel";
 import styles from "./styles.module.css";
+import { RARITIES } from "~/models/rarity";
+import StatBlock from "~/components/block/StatBlock";
+
 
 export const useTags = routeLoader$(async (ev) => {
     const toolId = ev.params.id;
@@ -37,11 +41,28 @@ export const useTierInfo = routeLoader$(async (ev) => {
     return await getTierInfoForRarity(parseInt(tierIndex));
 });
 
+export const useBaseSummon = routeLoader$(async (ev) => {
+    const toolId = ev.params.id;
+    const tierIndex = ev.params.rarityIndex;
+
+    const tool = await getTool(parseInt(toolId));
+    if (!tool?.summonType) {
+        return null;
+    }
+
+    const summon = await getSummon(
+        tool?.summonType,
+        RARITIES[parseInt(tierIndex)]
+    );
+
+    return summon;
+});
+
 export const useExplainModal = routeLoader$(async (ev) => {
     const toolId = ev.params.id;
 
     const explainer = await getExplainerForTagStage(parseInt(toolId));
-    console.log(explainer)
+    console.log(explainer);
 
     return explainer
         ? ({
@@ -83,6 +104,7 @@ export default component$(() => {
         onContinueClick,
         print,
         onClearFormTagClick,
+        summon,
     } = useTagPageViewModel();
 
     const explainer = useExplainModal();
@@ -95,7 +117,7 @@ export default component$(() => {
 
     if (showItemCard.value && rarityLevel && selectedFormTag.value) {
         return (
-            <div>
+            <div class={styles.finalDiv} id="item-and-summon">
                 <ItemBlock
                     rarity={rarityLevel}
                     formTag={selectedFormTag.value}
@@ -104,6 +126,22 @@ export default component$(() => {
                     )}
                     iconUrl={iconUrl.value}
                 />
+                {summon.value && (
+                    <StatBlock
+                        name={summon.value.name}
+                        stats={summon.value.stats}
+                        type={summon.value.creatureType}
+                        AC={summon.value.stats.ac}
+                        HP={summon.value.stats.hp}
+                        speed={summon.value.stats.spd.toString()}
+                        abilities={tagsToShow.value
+                            .filter((tag) => selectedEffectTagIds.value[tag.id])
+                            .map((tag) => ({
+                                title: tag.name,
+                                description: tag.description,
+                            }))}
+                    />
+                )}
                 <PrimaryButton
                     class={[styles.printButton]}
                     label="Print"
