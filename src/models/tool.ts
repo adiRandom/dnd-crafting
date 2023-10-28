@@ -1,5 +1,6 @@
 export type Tool = {
   id: number;
   name: string;
-  emoji?: string
+  emoji?: string;
+  isSummon: boolean;
 }

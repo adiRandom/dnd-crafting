@@ -24,6 +24,7 @@ export default component$(() => {
 
     const toolName = useSignal("");
     const toolEmoji = useSignal("");
+    const isSummon = useSignal(false);
 
     const onSubmit = $(async () => {
         if (isEdit.value) {
@@ -31,6 +32,7 @@ export default component$(() => {
                 ...selectedTool.value!,
                 name: toolName.value,
                 emoji: toolEmoji.value,
+                isSummon: isSummon.value,
             } as Tool);
 
             tools.value = tools.value.map((tool) =>
@@ -41,6 +43,7 @@ export default component$(() => {
                 name: toolName.value,
                 emoji: toolEmoji.value,
                 id: 0,
+                isSummon: isSummon.value,
             });
 
             tools.value = [...tools.value, result].sort((a, b) =>
@@ -64,6 +67,7 @@ export default component$(() => {
 
         toolName.value = "";
         toolEmoji.value = "";
+        isSummon.value = false;
     });
 
     const onCellClick = $(async (tool: Tool) => {
@@ -78,6 +82,7 @@ export default component$(() => {
         selectedTool.value = tool;
         toolName.value = tool.name;
         toolEmoji.value = tool.emoji ?? "";
+        isSummon.value = tool.isSummon;
     });
 
     return (
@@ -117,6 +122,16 @@ export default component$(() => {
                         placeholder="Tool Emoji"
                         value={toolEmoji.value}
                         onChange$={(ev) => (toolEmoji.value = ev.target.value)}
+                    />
+
+                    <h3 class={styles.inputLabel}>Is Summoning Tool</h3>
+                    <input
+                        class={styles.input}
+                        type="checkbox"
+                        checked={isSummon.value}
+                        onChange$={(ev) => {
+                            isSummon.value = ev.target.checked;
+                        }}
                     />
                     <div class={styles.buttonBar}>
                         <PrimaryButton onClick$={onSubmit} label="Submit" />

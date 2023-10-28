@@ -12,6 +12,10 @@ export type TagModel = {
   itemName?: string;
   toolId: number;
   mutuallyExclusiveTagId: number[];
+  summonBonus: {
+    ac: number | null,
+    spd: number | null
+  }
 }
 
 export type TagWithAvailability = TagModel & {

@@ -91,3 +91,9 @@
     gap: 12px;
     justify-content: flex-start;
 }
+
+.inputLabel{
+  font-size: 18px;
+  color: var(--primary-text);
+  margin: 2px;
+}

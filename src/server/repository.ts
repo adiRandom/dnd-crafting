@@ -77,6 +77,7 @@ export const getTags = server$(async (toolId: number) => {
   });
 
 
+
   return Promise.all(tags.map(async tag => {
     return {
       id: tag.id,
@@ -97,7 +98,11 @@ export const getTags = server$(async (toolId: number) => {
             second_tag
           ), ...tag.mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags
             .map(({ first_tag }) =>
-              first_tag)]
+              first_tag)],
+      summonBonus: {
+        ac: tag.summon_bonus_ac,
+        spd: tag.summon_bonus_spd
+      }
     } as TagModel;
   }));
 });
@@ -133,7 +138,11 @@ export const getAllTags = server$(async () => {
             second_tag
           ), ...tag.mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags
             .map(({ first_tag }) =>
-              first_tag)]
+              first_tag)],
+      summonBonus: {
+        ac: tag.summon_bonus_ac,
+        spd: tag.summon_bonus_spd
+      }
     } as TagModel;
   }
   ));
@@ -289,7 +298,8 @@ export const getTools = server$(async () => {
     return {
       id: tool.id,
       name: tool.name,
-      emoji: tool.emoji
+      emoji: tool.emoji,
+      isSummon: tool.isSummon === 1
     } as Tool;
   });
 });
@@ -310,7 +320,8 @@ export const getTool = server$(async (toolId: number) => {
   return {
     id: tool.id,
     name: tool.name,
-    emoji: tool.emoji
+    emoji: tool.emoji,
+    isSummon: tool.isSummon === 1
   } as Tool;
 });
 
@@ -335,14 +346,16 @@ export const updateTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: To
     },
     data: {
       name: tool.name,
-      emoji: tool.emoji
+      emoji: tool.emoji,
+      isSummon: tool.isSummon ? 1 : 0
     }
   });
 
   return {
     id: updatedTool.id,
     name: updatedTool.name,
-    emoji: updatedTool.emoji ?? undefined
+    emoji: updatedTool.emoji ?? undefined,
+    isSummon: updatedTool.isSummon === 1
   };
 });
 
@@ -352,14 +365,16 @@ export const createTool = server$<(tool: Tool) => Promise<Tool>>(async (tool: To
   const createdTool = await prisma.tools.create({
     data: {
       name: tool.name,
-      emoji: tool.emoji
+      emoji: tool.emoji,
+      isSummon: tool.isSummon ? 1 : 0
     }
   });
 
   return {
     id: createdTool.id,
     name: createdTool.name,
-    emoji: createdTool.emoji ?? undefined
+    emoji: createdTool.emoji ?? undefined,
+    isSummon: createdTool.isSummon === 1
   };
 });
 
@@ -540,7 +555,9 @@ export const updateTag = server$<(tag: TagModel) => Promise<TagModel>>(async (ta
       item_name: tag.itemName,
       cost_value: doesTagTakeAllSlots(tag.slotCost) ? null : tag.slotCost.value,
       cost_takes_all: doesTagTakeAllSlots(tag.slotCost) ? 1 : 0,
-      tool_id: tag.toolId
+      tool_id: tag.toolId,
+      summon_bonus_ac: tag.summonBonus.ac,
+      summon_bonus_spd: tag.summonBonus.spd
     }
   });
   console.log("Quack2")
@@ -606,7 +623,11 @@ export const updateTag = server$<(tag: TagModel) => Promise<TagModel>>(async (ta
     description: updatedTag.description,
     itemName: updatedTag.item_name,
     toolId: updatedTag.tool_id,
-    mutuallyExclusiveTagId: tag.mutuallyExclusiveTagId
+    mutuallyExclusiveTagId: tag.mutuallyExclusiveTagId,
+    summonBonus: {
+      ac: updatedTag.summon_bonus_ac,
+      spd: updatedTag.summon_bonus_spd
+    }
   } as TagModel;
 }
 );
@@ -625,6 +646,8 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
         cost_value: doesTagTakeAllSlots(tag.slotCost) ? null : tag.slotCost.value,
         cost_takes_all: doesTagTakeAllSlots(tag.slotCost) ? 1 : 0,
         tool_id: tag.toolId,
+        summon_bonus_ac: tag.summonBonus.ac,
+        summon_bonus_spd: tag.summonBonus.spd,
         mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_first_tagTotags: {
           create: tag.mutuallyExclusiveTagId.map(tagId => ({
             second_tag: tagId
@@ -670,7 +693,11 @@ export const createTag = server$<(tag: TagModel) => Promise<TagModel>>(
         ), ...createdTag.mutually_exclusive_effect_tags_mutually_exclusive_effect_tags_second_tagTotags.map(
           ({ first_tag }) =>
             first_tag
-        )]
+        )],
+      summonBonus: {
+        ac: createdTag.summon_bonus_ac,
+        spd: createdTag.summon_bonus_spd
+      }
     } as TagModel;
   }
 );
@@ -734,7 +761,11 @@ const getTagById = server$<(tagId: number) => Promise<TagModel | null>>(async (t
     })).map(tagDep => tagDep.form_tag_id),
     description: tag.description,
     itemName: tag.item_name,
-    toolId: tag.tool_id
+    toolId: tag.tool_id,
+    summonBonus: {
+      ac: tag.summon_bonus_ac,
+      spd: tag.summon_bonus_spd
+    }
   } as TagModel
 });
 

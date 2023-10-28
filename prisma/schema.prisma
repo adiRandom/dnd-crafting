@@ -67,6 +67,8 @@ model tags {
   description                                                                    String
   item_name                                                                      String
   tool_id                                                                        Int
+  summon_bonus_spd                                                               Int?
+  summon_bonus_ac                                                                Int?
   effect_tag_deps_effect_tag_deps_effect_tag_idTotags                            effect_tag_deps[]                @relation("effect_tag_deps_effect_tag_idTotags")
   effect_tag_deps_effect_tag_deps_form_tag_idTotags                              effect_tag_deps[]                @relation("effect_tag_deps_form_tag_idTotags")
   images                                                                         images[]
@@ -88,10 +90,11 @@ model tier_info {
 }
 
 model tools {
-  id    Int     @id @default(autoincrement())
-  name  String
-  emoji String?
-  tags  tags[]
+  id       Int     @id @default(autoincrement())
+  name     String
+  emoji    String?
+  isSummon Int     @default(0)
+  tags     tags[]
 }
 
 model summons {

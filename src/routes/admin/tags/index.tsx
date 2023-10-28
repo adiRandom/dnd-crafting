@@ -38,6 +38,9 @@ export default component$(() => {
     const itemName = useSignal("");
     const selectedTool = useSignal<Tool | null>(tools.value[0] ?? null);
 
+    const bonusAc = useSignal(0);
+    const bonusSpd = useSignal(0);
+
     const availableFormTagsDependencies = useComputed$(() => {
         if (selectedTool.value === null || tagType.value === TagType.FormTag) {
             return [];
@@ -77,6 +80,8 @@ export default component$(() => {
         itemName.value = "";
         selectedTool.value = null;
         mutuallyExclusiveEffectTagIds.value = [];
+        bonusAc.value = 0;
+        bonusSpd.value = 0;
     });
 
     const updateMutuallyExclusiveAfterSubmit = $(
@@ -145,6 +150,10 @@ export default component$(() => {
                 itemName: itemName.value,
                 toolId: selectedTool.value.id,
                 mutuallyExclusiveTagId: mutuallyExclusiveEffectTagIds.value,
+                summonBonus: {
+                    ac: bonusAc.value,
+                    spd: bonusSpd.value,
+                }
             } as TagModel);
 
             tags.value = tags.value.map((tag) =>
@@ -169,6 +178,10 @@ export default component$(() => {
                 itemName: itemName.value,
                 toolId: selectedTool.value.id,
                 mutuallyExclusiveTagId: mutuallyExclusiveEffectTagIds.value,
+                summonBonus: {
+                    ac: bonusAc.value,
+                    spd: bonusSpd.value,
+                }
             });
 
             tags.value = [...tags.value, result];
@@ -220,6 +233,8 @@ export default component$(() => {
         selectedTool.value = tool;
         console.log(tag.mutuallyExclusiveTagId);
         mutuallyExclusiveEffectTagIds.value = tag.mutuallyExclusiveTagId;
+        bonusAc.value = tag.summonBonus.ac ?? 0;
+        bonusSpd.value = tag.summonBonus.spd ?? 0;
     });
 
     return (
@@ -337,6 +352,36 @@ export default component$(() => {
                                 </option>
                             ))}
                         </select>
+
+                        {selectedTool.value?.isSummon && (
+                            <>
+                                <h3 class={styles.inputLabel}>Bonus AC for Summon</h3>
+                                <input
+                                    class={styles.input}
+                                    type="text"
+                                    value={bonusAc.value}
+                                    onChange$={(ev) => {
+                                        const value = parseInt(ev.target.value);
+                                        bonusAc.value = isNaN(value)
+                                            ? 0
+                                            : value;
+                                    }}
+                                />
+
+                                <h3 class={styles.inputLabel}>Bonus Speed for Summon</h3>
+                                <input
+                                    class={styles.input}
+                                    type="text"
+                                    value={bonusSpd.value}
+                                    onChange$={(ev) => {
+                                        const value = parseInt(ev.target.value);
+                                        bonusSpd.value = isNaN(value)
+                                            ? 0
+                                            : value;
+                                    }}
+                                />
+                            </>
+                        )}
                         {tagType.value === TagType.FormTag && (
                             <>
                                 <h3 class={styles.inputLabel}>Item Name</h3>
